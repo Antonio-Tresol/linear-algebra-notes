@@ -72,7 +72,7 @@
     "viz.inv.sub": "The inverse A⁻¹ undoes A. Apply A, then A⁻¹, and space returns to where it began.",
     "viz.inv.applyUndo": "Apply A, then undo",
     "viz.inv.label": "Inverse A⁻¹",
-    "viz.inv.none": "det(A) = 0, so A flattens space onto a line. There is no inverse: a collapse cannot be undone.",
+    "viz.inv.none": "det(A) = 0, so A collapses space to a lower dimension. There is no inverse: a collapse cannot be undone.",
     "viz.inv.stageApply": "Applying A",
     "viz.inv.stageUndo": "Undoing with A⁻¹",
     "viz.shapes.label": "Drop a shape (drag it in the space)",
@@ -160,5 +160,10 @@
     "matmul.p.scaleRot": "A: scale 2×, B: rotate 45°",
     "matmul.p.shearShear": "A: shear x, B: shear y",
     "matmul.p.flipRot": "A: flip y, B: rotate 90°",
+
+    "matmul3d.p.rotShear": "A: rotate z 90°, B: shear z→x",
+    "matmul3d.p.scaleRot": "A: scale 1.5×, B: rotate y 45°",
+    "matmul3d.p.reflectRot": "A: reflect z, B: rotate z 90°",
+    "matmul3d.hint": "Notice det(AB) = det(A) · det(B), always. Swapping the order changes the product matrix (AB ≠ BA) but never its determinant, since det(AB) = det(BA). The shaded box is the image of the unit cube; see <a href=\"glossary.html#determinant\">determinant</a>.",
   };
 })();

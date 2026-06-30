@@ -70,7 +70,7 @@
     "viz.inv.sub": "La inversa A⁻¹ deshace A. Aplica A, luego A⁻¹, y el espacio vuelve a donde empezó.",
     "viz.inv.applyUndo": "Aplicar A y deshacer",
     "viz.inv.label": "Inversa A⁻¹",
-    "viz.inv.none": "det(A) = 0, así que A aplasta el espacio sobre una recta. No hay inversa: un colapso no se puede deshacer.",
+    "viz.inv.none": "det(A) = 0, así que A colapsa el espacio a una dimensión menor. No hay inversa: un colapso no se puede deshacer.",
     "viz.inv.stageApply": "Aplicando A",
     "viz.inv.stageUndo": "Deshaciendo con A⁻¹",
     "viz.shapes.label": "Coloca una figura (arrástrala por el espacio)",
@@ -158,5 +158,10 @@
     "matmul.p.scaleRot": "A: escalar 2×, B: rotar 45°",
     "matmul.p.shearShear": "A: cizalla x, B: cizalla y",
     "matmul.p.flipRot": "A: reflejar y, B: rotar 90°",
+
+    "matmul3d.p.rotShear": "A: rotar z 90°, B: cizalla z→x",
+    "matmul3d.p.scaleRot": "A: escalar 1.5×, B: rotar y 45°",
+    "matmul3d.p.reflectRot": "A: reflejar z, B: rotar z 90°",
+    "matmul3d.hint": "Observa que det(AB) = det(A) · det(B), siempre. Cambiar el orden cambia la matriz producto (AB ≠ BA) pero nunca su determinante, ya que det(AB) = det(BA). La caja sombreada es la imagen del cubo unidad; véase <a href=\"glossary.html#determinant\">determinante</a>.",
   };
 })();

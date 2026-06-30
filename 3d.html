@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="assets/shared.css?v=20260629f">
+<link rel="stylesheet" href="assets/shared.css?v=20260629g">
 
-<script src="assets/shared.js?v=20260629f"></script>
+<script src="assets/shared.js?v=20260629g"></script>
 </head>
 <body data-page="3d">
 
@@ -20,55 +20,169 @@
 <section class="viz">
   <div class="stage stage--grab">
     <canvas id="c" role="img" aria-label="A 3D lattice transformed by a 3 by 3 matrix. The basis vectors i-hat, j-hat and k-hat move to the matrix columns and the unit cube's image is shaded; its volume equals the determinant."></canvas>
-    <div class="stage-hint" data-i18n="viz3d.stageHint">Drag to orbit · scroll to zoom</div>
+    <div class="stage-hint" id="stage-hint" data-i18n="viz3d.stageHint">Drag to orbit · scroll to zoom</div>
   </div>
 
   <div class="panel">
-    <div class="card">
-      <h1 data-i18n="viz3d.title">3×3 transformation</h1>
-      <p class="sub" data-i18n-html="viz3d.sub">Each <em>column</em> is where a basis vector lands. The <a href="glossary.html#determinant">determinant</a> is now a signed <a href="glossary.html#area-volume">volume</a>.</p>
-      <div class="matrix-row">
-        <div class="bracket">[</div>
-        <div class="cells cells--3">
-          <input id="m0" type="number" step="0.1" value="1" aria-label="row 1 col 1"><input id="m1" type="number" step="0.1" value="0" aria-label="row 1 col 2"><input id="m2" type="number" step="0.1" value="0" aria-label="row 1 col 3">
-          <input id="m3" type="number" step="0.1" value="0" aria-label="row 2 col 1"><input id="m4" type="number" step="0.1" value="1" aria-label="row 2 col 2"><input id="m5" type="number" step="0.1" value="0" aria-label="row 2 col 3">
-          <input id="m6" type="number" step="0.1" value="0" aria-label="row 3 col 1"><input id="m7" type="number" step="0.1" value="0" aria-label="row 3 col 2"><input id="m8" type="number" step="0.1" value="1" aria-label="row 3 col 3">
+    <div class="tabs" role="tablist" aria-label="Transformation modes">
+      <button class="tab" id="tab-transform" role="tab" aria-selected="true" aria-controls="panel-transform" data-i18n="viz.tab.transform">Transform</button>
+      <button class="tab" id="tab-inverse" role="tab" aria-selected="false" aria-controls="panel-inverse" tabindex="-1" data-i18n="viz.tab.inverse">Inverse</button>
+      <button class="tab" id="tab-compose" role="tab" aria-selected="false" aria-controls="panel-compose" tabindex="-1" data-i18n="viz.tab.compose">Compose</button>
+    </div>
+
+    <!-- ===================== TRANSFORM ===================== -->
+    <div class="tabpanel" id="panel-transform" role="tabpanel" aria-labelledby="tab-transform">
+      <div class="card">
+        <h1 data-i18n="viz3d.title">3×3 transformation</h1>
+        <p class="sub" data-i18n-html="viz3d.sub">Each <em>column</em> is where a basis vector lands. The <a href="glossary.html#determinant">determinant</a> is now a signed <a href="glossary.html#area-volume">volume</a>.</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--3">
+            <input id="tf-m0" type="number" step="0.1" value="1" aria-label="row 1 col 1"><input id="tf-m1" type="number" step="0.1" value="0" aria-label="row 1 col 2"><input id="tf-m2" type="number" step="0.1" value="0" aria-label="row 1 col 3">
+            <input id="tf-m3" type="number" step="0.1" value="0" aria-label="row 2 col 1"><input id="tf-m4" type="number" step="0.1" value="1" aria-label="row 2 col 2"><input id="tf-m5" type="number" step="0.1" value="0" aria-label="row 2 col 3">
+            <input id="tf-m6" type="number" step="0.1" value="0" aria-label="row 3 col 1"><input id="tf-m7" type="number" step="0.1" value="0" aria-label="row 3 col 2"><input id="tf-m8" type="number" step="0.1" value="1" aria-label="row 3 col 3">
+          </div>
+        </div>
+        <div class="col-key col-key--3">
+          <span><span class="swatch" style="background:var(--vec-i)"></span> î</span>
+          <span><span class="swatch" style="background:var(--vec-j)"></span> ĵ</span>
+          <span><span class="swatch" style="background:var(--vec-k)"></span> k̂</span>
+        </div>
+        <div class="buttons">
+          <button id="tf-animate" class="btn btn--primary" data-i18n="viz.animate">Animate from identity</button>
+          <button id="tf-reset" class="btn" data-i18n="viz.reset">Reset</button>
         </div>
       </div>
-      <div class="col-key col-key--3">
-        <span><span class="swatch" style="background:var(--vec-i)"></span> î</span>
-        <span><span class="swatch" style="background:var(--vec-j)"></span> ĵ</span>
-        <span><span class="swatch" style="background:var(--vec-k)"></span> k̂</span>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.presets">Presets</p>
+        <div class="presets">
+          <button class="btn" data-m="0,-1,0,1,0,0,0,0,1" data-i18n="viz3d.p.rotZ90">Rotate z 90°</button>
+          <button class="btn" data-m="0.707,0,0.707,0,1,0,-0.707,0,0.707" data-i18n="viz3d.p.rotY45">Rotate y 45°</button>
+          <button class="btn" data-m="1,0,1,0,1,0,0,0,1" data-i18n="viz3d.p.shearZX">Shear (z→x)</button>
+          <button class="btn" data-m="1.5,0,0,0,1.5,0,0,0,1.5" data-i18n="viz3d.p.scale15">Scale 1.5×</button>
+          <button class="btn" data-m="1,0,0,0,1,0,0,0,-1" data-i18n="viz3d.p.reflectZ">Reflect z</button>
+          <button class="btn" data-m="1,0,0,0,1,0,0,0,0" data-i18n="viz3d.p.squash">Squash to plane</button>
+        </div>
       </div>
-      <div class="buttons">
-        <button id="animate" class="btn btn--primary" data-i18n="viz.animate">Animate from identity</button>
-        <button id="reset" class="btn" data-i18n="viz.reset">Reset</button>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.readout">Readout</p>
+        <div class="readout">
+          <div class="line"><span class="k" data-i18n="viz.iGoesTo">î goes to</span><span class="v" id="tf-r-i">(1, 0, 0)</span></div>
+          <div class="line"><span class="k" data-i18n="viz.jGoesTo">ĵ goes to</span><span class="v" id="tf-r-j">(0, 1, 0)</span></div>
+          <div class="line"><span class="k" data-i18n="viz.kGoesTo">k̂ goes to</span><span class="v" id="tf-r-k">(0, 0, 1)</span></div>
+          <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="tf-r-det">1.00</span></div>
+          <div class="line"><span class="k" data-i18n="viz3d.volScale">Volume scale</span><span class="v" id="tf-r-vol">1.00×</span></div>
+          <div class="line"><span class="k" data-i18n="viz.orient">Orientation</span><span class="v orient preserved" id="tf-r-orient">preserved</span></div>
+        </div>
+        <p class="hint" data-i18n-html="viz3d.hint">The shaded box is the image of the unit cube; its signed volume is the determinant. Zero volume means space was squashed flat (<a href="glossary.html#singular">singular</a>). Negative means the handedness flipped.</p>
       </div>
     </div>
 
-    <div class="card">
-      <p class="label" data-i18n="viz.presets">Presets</p>
-      <div class="presets">
-        <button class="btn" data-m="0,-1,0,1,0,0,0,0,1" data-i18n="viz3d.p.rotZ90">Rotate z 90°</button>
-        <button class="btn" data-m="0.707,0,0.707,0,1,0,-0.707,0,0.707" data-i18n="viz3d.p.rotY45">Rotate y 45°</button>
-        <button class="btn" data-m="1,0,1,0,1,0,0,0,1" data-i18n="viz3d.p.shearZX">Shear (z→x)</button>
-        <button class="btn" data-m="1.5,0,0,0,1.5,0,0,0,1.5" data-i18n="viz3d.p.scale15">Scale 1.5×</button>
-        <button class="btn" data-m="1,0,0,0,1,0,0,0,-1" data-i18n="viz3d.p.reflectZ">Reflect z</button>
-        <button class="btn" data-m="1,0,0,0,1,0,0,0,0" data-i18n="viz3d.p.squash">Squash to plane</button>
+    <!-- ===================== INVERSE ===================== -->
+    <div class="tabpanel" id="panel-inverse" role="tabpanel" aria-labelledby="tab-inverse" hidden>
+      <div class="card">
+        <h1 data-i18n="viz.inv.title">The inverse undoes A</h1>
+        <p class="sub" data-i18n="viz.inv.sub">The inverse A⁻¹ undoes A. Apply A, then A⁻¹, and space returns to where it began.</p>
+
+        <p class="label" data-i18n="viz.inv.matrixA">Matrix A</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--3">
+            <input id="inv-m0" type="number" step="0.1" value="2" aria-label="A: row 1 col 1"><input id="inv-m1" type="number" step="0.1" value="0" aria-label="A: row 1 col 2"><input id="inv-m2" type="number" step="0.1" value="0" aria-label="A: row 1 col 3">
+            <input id="inv-m3" type="number" step="0.1" value="0" aria-label="A: row 2 col 1"><input id="inv-m4" type="number" step="0.1" value="2" aria-label="A: row 2 col 2"><input id="inv-m5" type="number" step="0.1" value="0" aria-label="A: row 2 col 3">
+            <input id="inv-m6" type="number" step="0.1" value="0" aria-label="A: row 3 col 1"><input id="inv-m7" type="number" step="0.1" value="0" aria-label="A: row 3 col 2"><input id="inv-m8" type="number" step="0.1" value="2" aria-label="A: row 3 col 3">
+          </div>
+        </div>
+
+        <div class="col-key col-key--3">
+          <span><span class="swatch" style="background:var(--vec-i)"></span> î</span>
+          <span><span class="swatch" style="background:var(--vec-j)"></span> ĵ</span>
+          <span><span class="swatch" style="background:var(--vec-k)"></span> k̂</span>
+        </div>
+
+        <div class="buttons">
+          <button id="inv-run" class="btn btn--primary" data-i18n="viz.inv.applyUndo">Apply A, then undo</button>
+          <button id="inv-reset" class="btn" data-i18n="viz.reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.inv.label">Inverse A⁻¹</p>
+        <div class="matrix-row" id="inv-matrix-wrap">
+          <div class="bracket">[</div>
+          <div class="cells cells--3">
+            <span class="v" id="inv-r0">0.50</span><span class="v" id="inv-r1">0.00</span><span class="v" id="inv-r2">0.00</span>
+            <span class="v" id="inv-r3">0.00</span><span class="v" id="inv-r4">0.50</span><span class="v" id="inv-r5">0.00</span>
+            <span class="v" id="inv-r6">0.00</span><span class="v" id="inv-r7">0.00</span><span class="v" id="inv-r8">0.50</span>
+          </div>
+        </div>
+        <p class="hint" id="inv-none" data-i18n="viz.inv.none" hidden>det(A) = 0, so A collapses space to a lower dimension. There is no inverse: a collapse cannot be undone.</p>
+        <div class="readout" style="margin-top:12px">
+          <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="inv-det">8.00</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <p class="label" data-i18n="viz.readout">Readout</p>
-      <div class="readout">
-        <div class="line"><span class="k" data-i18n="viz.iGoesTo">î goes to</span><span class="v" id="r-i">(1, 0, 0)</span></div>
-        <div class="line"><span class="k" data-i18n="viz.jGoesTo">ĵ goes to</span><span class="v" id="r-j">(0, 1, 0)</span></div>
-        <div class="line"><span class="k" data-i18n="viz.kGoesTo">k̂ goes to</span><span class="v" id="r-k">(0, 0, 1)</span></div>
-        <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="r-det">1.00</span></div>
-        <div class="line"><span class="k" data-i18n="viz3d.volScale">Volume scale</span><span class="v" id="r-vol">1.00×</span></div>
-        <div class="line"><span class="k" data-i18n="viz.orient">Orientation</span><span class="v orient preserved" id="r-orient">preserved</span></div>
+    <!-- ===================== COMPOSE ===================== -->
+    <div class="tabpanel" id="panel-compose" role="tabpanel" aria-labelledby="tab-compose" hidden>
+      <div class="card">
+        <h1 data-i18n="matmul.title">Multiplying = composing</h1>
+        <p class="sub" data-i18n-html="matmul.sub">A matrix product is a <em>composition</em>: AB means "do B first, then A". Order matters, so AB is usually not BA. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
+
+        <p class="label" id="cmp-labA" data-i18n="matmul.matrixA">Matrix A (applied second)</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--3">
+            <input id="cmp-a0" type="number" step="0.1" value="0" aria-label="A: row 1 col 1"><input id="cmp-a1" type="number" step="0.1" value="-1" aria-label="A: row 1 col 2"><input id="cmp-a2" type="number" step="0.1" value="0" aria-label="A: row 1 col 3">
+            <input id="cmp-a3" type="number" step="0.1" value="1" aria-label="A: row 2 col 1"><input id="cmp-a4" type="number" step="0.1" value="0" aria-label="A: row 2 col 2"><input id="cmp-a5" type="number" step="0.1" value="0" aria-label="A: row 2 col 3">
+            <input id="cmp-a6" type="number" step="0.1" value="0" aria-label="A: row 3 col 1"><input id="cmp-a7" type="number" step="0.1" value="0" aria-label="A: row 3 col 2"><input id="cmp-a8" type="number" step="0.1" value="1" aria-label="A: row 3 col 3">
+          </div>
+        </div>
+
+        <p class="label" id="cmp-labB" data-i18n="matmul.matrixB">Matrix B (applied first)</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--3">
+            <input id="cmp-b0" type="number" step="0.1" value="1" aria-label="B: row 1 col 1"><input id="cmp-b1" type="number" step="0.1" value="0" aria-label="B: row 1 col 2"><input id="cmp-b2" type="number" step="0.1" value="1" aria-label="B: row 1 col 3">
+            <input id="cmp-b3" type="number" step="0.1" value="0" aria-label="B: row 2 col 1"><input id="cmp-b4" type="number" step="0.1" value="1" aria-label="B: row 2 col 2"><input id="cmp-b5" type="number" step="0.1" value="0" aria-label="B: row 2 col 3">
+            <input id="cmp-b6" type="number" step="0.1" value="0" aria-label="B: row 3 col 1"><input id="cmp-b7" type="number" step="0.1" value="0" aria-label="B: row 3 col 2"><input id="cmp-b8" type="number" step="0.1" value="1" aria-label="B: row 3 col 3">
+          </div>
+        </div>
+
+        <div class="col-key col-key--3">
+          <span><span class="swatch" style="background:var(--vec-i)"></span> î</span>
+          <span><span class="swatch" style="background:var(--vec-j)"></span> ĵ</span>
+          <span><span class="swatch" style="background:var(--vec-k)"></span> k̂</span>
+        </div>
+
+        <div class="buttons">
+          <button id="cmp-animate" class="btn btn--primary" data-i18n="matmul.animate">Animate composition</button>
+          <button id="cmp-order" class="btn" data-i18n="matmul.showBA">Show B∘A instead</button>
+          <button id="cmp-reset" class="btn" data-i18n="viz.reset">Reset</button>
+        </div>
       </div>
-      <p class="hint" data-i18n-html="viz3d.hint">The shaded box is the image of the unit cube; its signed volume is the determinant. Zero volume means space was squashed flat (<a href="glossary.html#singular">singular</a>). Negative means the handedness flipped.</p>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.presets">Presets</p>
+        <div class="presets">
+          <button class="btn" data-a="0,-1,0,1,0,0,0,0,1" data-b="1,0,1,0,1,0,0,0,1" data-i18n="matmul3d.p.rotShear">A: rotate z 90°, B: shear z→x</button>
+          <button class="btn" data-a="1.5,0,0,0,1.5,0,0,0,1.5" data-b="0.707,0,0.707,0,1,0,-0.707,0,0.707" data-i18n="matmul3d.p.scaleRot">A: scale 1.5×, B: rotate y 45°</button>
+          <button class="btn" data-a="1,0,0,0,1,0,0,0,-1" data-b="0,-1,0,1,0,0,0,0,1" data-i18n="matmul3d.p.reflectRot">A: reflect z, B: rotate z 90°</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.readout">Readout</p>
+        <div class="readout">
+          <div class="line"><span class="k" data-i18n="matmul.detA">det(A)</span><span class="v" id="cmp-r-detA">1.00</span></div>
+          <div class="line"><span class="k" data-i18n="matmul.detB">det(B)</span><span class="v" id="cmp-r-detB">1.00</span></div>
+          <div class="line"><span class="k" data-i18n="matmul.detProductOf">det(A) · det(B)</span><span class="v" id="cmp-r-detmul">1.00</span></div>
+          <div class="line"><span class="k" id="cmp-r-detprod-key" data-i18n="matmul.detProduct">det(AB)</span><span class="v" id="cmp-r-detprod">1.00</span></div>
+        </div>
+        <p class="hint" data-i18n-html="matmul3d.hint">Notice det(AB) = det(A) · det(B), always. Swapping the order changes the product matrix (AB ≠ BA) but never its determinant, since det(AB) = det(BA). The shaded box is the image of the unit cube; see <a href="glossary.html#determinant">determinant</a>.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -82,11 +196,11 @@
 
 <footer data-footer></footer>
 
-<script src="content/strings.en.js?v=20260629f"></script>
-<script src="content/strings.es.js?v=20260629f"></script>
-<script src="content/sources.data.js?v=20260629f"></script>
-<script src="content/keyideas.en.js?v=20260629f"></script>
-<script src="content/keyideas.es.js?v=20260629f"></script>
+<script src="content/strings.en.js?v=20260629g"></script>
+<script src="content/strings.es.js?v=20260629g"></script>
+<script src="content/sources.data.js?v=20260629g"></script>
+<script src="content/keyideas.en.js?v=20260629g"></script>
+<script src="content/keyideas.es.js?v=20260629g"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <script>
@@ -95,6 +209,7 @@
   function paint() {
     document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
     document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", LA.t(el.getAttribute("data-i18n-aria"))); });
     var ki = document.getElementById("keyideas");
     if (ki) LA.renderKeyIdeas(document.body.dataset.page, ki);
   }
@@ -109,14 +224,18 @@
   const ctx = canvas.getContext("2d");
   let COL = LA.canvasColors();
 
-  const ids = ["m0","m1","m2","m3","m4","m5","m6","m7","m8"];
-  const inputs = ids.map((i) => document.getElementById(i));
+  const ID = [1,0,0, 0,1,0, 0,0,1];
 
-  let cur = [1,0,0, 0,1,0, 0,0,1];
+  // ---------- animated state (single persistent renderer in frame()) ----------
+  let cur = ID.slice();
+  let ghost = null;             // faint A⁻¹ lattice drawn behind cur (Inverse)
   let from = cur.slice(), target = cur.slice();
-  let tweenStart = 0, tweening = false;
-  const DUR = 750;
+  let tweenStart = 0, tweening = false, tweenDone = null;
+  const DUR = 750;              // per-stage tween
+  const PAUSE = 460;            // hold between stages
+  let seqToken = 0;             // bump to cancel any in-flight multi-stage sequence
 
+  // ---------- camera ----------
   let yaw = -0.62, pitch = -0.42, zoom = 1.0;
   let dragging = false, lastX = 0, lastY = 0, idleSpin = !LA.reduceMotion;
   let camDist = 9, focal = 1;
@@ -130,12 +249,48 @@
     draw(); // paint one static frame immediately, independent of the rAF loop
   }
 
+  // ---------- linear algebra (3x3, row-major) ----------
   const apply = (m, x, y, z) => [
     m[0]*x + m[1]*y + m[2]*z,
     m[3]*x + m[4]*y + m[5]*z,
     m[6]*x + m[7]*y + m[8]*z,
   ];
 
+  function determinant(m) {
+    return m[0]*(m[4]*m[8]-m[5]*m[7]) - m[1]*(m[3]*m[8]-m[5]*m[6]) + m[2]*(m[3]*m[7]-m[4]*m[6]);
+  }
+
+  // P = M·N applies N first, then M (row-major, 9 elements).
+  function mul3(M, N) {
+    const r = new Array(9);
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        let s = 0;
+        for (let k = 0; k < 3; k++) s += M[i*3+k] * N[k*3+j];
+        r[i*3+j] = s;
+      }
+    }
+    return r;
+  }
+
+  // Inverse via adjugate / cofactors. Returns null when |det| < 1e-9.
+  function inverse3(m) {
+    const D = determinant(m);
+    if (Math.abs(D) < 1e-9) return null;
+    const c = [
+       (m[4]*m[8]-m[5]*m[7]), -(m[3]*m[8]-m[5]*m[6]),  (m[3]*m[7]-m[4]*m[6]),
+      -(m[1]*m[8]-m[2]*m[7]),  (m[0]*m[8]-m[2]*m[6]), -(m[0]*m[7]-m[1]*m[6]),
+       (m[1]*m[5]-m[2]*m[4]), -(m[0]*m[5]-m[2]*m[3]),  (m[0]*m[4]-m[1]*m[3]),
+    ];
+    // adjugate = transpose of cofactor matrix; inverse = adj / det
+    return [
+      c[0]/D, c[3]/D, c[6]/D,
+      c[1]/D, c[4]/D, c[7]/D,
+      c[2]/D, c[5]/D, c[8]/D,
+    ];
+  }
+
+  // ---------- projection ----------
   function rot(p) {
     const cy_ = Math.cos(yaw), sy = Math.sin(yaw);
     let x1 = p[0]*cy_ + p[2]*sy;
@@ -188,8 +343,8 @@
   const FACES = [[0,1,2,3],[4,5,6,7],[0,1,5,4],[2,3,7,6],[1,2,6,5],[0,3,7,4]];
   const EDGES = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 
-  function drawLattice(m) {
-    const N = 2, alpha = 0.32;
+  function drawLattice(m, alpha) {
+    const N = 2;
     for (let b = -N; b <= N; b++) {
       for (let c = -N; c <= N; c++) {
         line3(apply(m,-N,b,c), apply(m,N,b,c), COL.gridMoved, 1, alpha);
@@ -197,10 +352,6 @@
         line3(apply(m,b,c,-N), apply(m,b,c,N), COL.gridMoved, 1, alpha);
       }
     }
-  }
-
-  function determinant(m) {
-    return m[0]*(m[4]*m[8]-m[5]*m[7]) - m[1]*(m[3]*m[8]-m[5]*m[6]) + m[2]*(m[3]*m[7]-m[4]*m[6]);
   }
 
   function drawCube(m) {
@@ -235,51 +386,228 @@
   function draw() {
     ctx.clearRect(0, 0, W, H);
     drawRefAxes();
-    drawLattice(cur);
+    if (ghost) drawLattice(ghost, 0.16);   // faint A⁻¹ lattice
+    drawLattice(cur, 0.32);
     drawCube(cur);
     arrow3(cur, 0, COL.iHat, "î");
     arrow3(cur, 1, COL.jHat, "ĵ");
     arrow3(cur, 2, COL.kHat, "k̂");
   }
 
-  const vec = (m, col) => "(" + LA.fmt(m[col]) + ", " + LA.fmt(m[col+3]) + ", " + LA.fmt(m[col+6]) + ")";
-
-  function updateReadout(m) {
-    const det = determinant(m);
-    document.getElementById("r-i").textContent = vec(m, 0);
-    document.getElementById("r-j").textContent = vec(m, 1);
-    document.getElementById("r-k").textContent = vec(m, 2);
-    document.getElementById("r-det").textContent = LA.fmt(det);
-    document.getElementById("r-vol").textContent = LA.fmt(Math.abs(det)) + "×";
-    const el = document.getElementById("r-orient"); el.className = "v orient";
-    if (Math.abs(det) < 1e-9) { el.classList.add("degenerate"); el.textContent = LA.t("viz.orient.collapsed"); }
-    else if (det < 0) { el.classList.add("flipped"); el.textContent = LA.t("viz.orient.flipped"); }
-    else { el.classList.add("preserved"); el.textContent = LA.t("viz.orient.preserved"); }
-  }
-
-  const readInputs = () => inputs.map((el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; });
-  const writeInputs = (m) => inputs.forEach((el, k) => { el.value = LA.fmt(m[k]); });
-
-  function setTarget(m, animate) {
-    target = m.slice(); updateReadout(target);
-    if (animate && !LA.reduceMotion) { from = cur.slice(); tweenStart = performance.now(); tweening = true; }
-    else { cur = target.slice(); }
-  }
-
+  // ---------- persistent renderer: interpolation + idle spin live here ----------
   function frame(now) {
     if (tweening) {
       let t = (now - tweenStart) / DUR;
       if (t >= 1) { t = 1; tweening = false; }
       const e = LA.easeInOut(t);
       for (let k = 0; k < 9; k++) cur[k] = from[k] + (target[k]-from[k]) * e;
+      if (!tweening && tweenDone) { const cb = tweenDone; tweenDone = null; cb(); }
     }
     if (idleSpin && !dragging) yaw += 0.0024;
     draw();
     requestAnimationFrame(frame);
   }
 
+  // Tween cur -> to; fires onDone once when the tween completes (or immediately
+  // under reduced motion). Interpolation itself happens in frame().
+  function tweenTo(to, onDone) {
+    target = to.slice();
+    if (LA.reduceMotion) { cur = to.slice(); if (onDone) onDone(); return; }
+    from = cur.slice(); tweenStart = performance.now(); tweening = true; tweenDone = onDone || null;
+  }
+
+  function setStageHint(key) {
+    document.getElementById("stage-hint").textContent = LA.t(key);
+  }
+
+  // ===================================================================
+  //  TRANSFORM mode
+  // ===================================================================
+  const tfIds = ["tf-m0","tf-m1","tf-m2","tf-m3","tf-m4","tf-m5","tf-m6","tf-m7","tf-m8"];
+  const tfInputs = tfIds.map((i) => document.getElementById(i));
+  const readM = (els) => els.map((el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; });
+  const tfRead = () => readM(tfInputs);
+  const tfWrite = (m) => tfInputs.forEach((el, k) => { el.value = LA.fmt(m[k]); });
+
+  const vec = (m, col) => "(" + LA.fmt(m[col]) + ", " + LA.fmt(m[col+3]) + ", " + LA.fmt(m[col+6]) + ")";
+
+  function tfReadout(m) {
+    const det = determinant(m);
+    document.getElementById("tf-r-i").textContent = vec(m, 0);
+    document.getElementById("tf-r-j").textContent = vec(m, 1);
+    document.getElementById("tf-r-k").textContent = vec(m, 2);
+    document.getElementById("tf-r-det").textContent = LA.fmt(det);
+    document.getElementById("tf-r-vol").textContent = LA.fmt(Math.abs(det)) + "×";
+    const el = document.getElementById("tf-r-orient"); el.className = "v orient";
+    if (Math.abs(det) < 1e-9) { el.classList.add("degenerate"); el.textContent = LA.t("viz.orient.collapsed"); }
+    else if (det < 0) { el.classList.add("flipped"); el.textContent = LA.t("viz.orient.flipped"); }
+    else { el.classList.add("preserved"); el.textContent = LA.t("viz.orient.preserved"); }
+  }
+
+  function tfApply(m, animate) {
+    tfReadout(m);
+    ghost = null;
+    seqToken++;                  // cancel any sequence in flight
+    if (animate && !LA.reduceMotion) {
+      cur = ID.slice();
+      tweenTo(m.slice(), null);
+    } else {
+      tweening = false; tweenDone = null;
+      cur = m.slice();
+    }
+  }
+
+  tfInputs.forEach((el) => el.addEventListener("input", () => { if (mode === "transform") tfApply(tfRead(), false); }));
+  document.getElementById("tf-animate").addEventListener("click", () => tfApply(tfRead(), true));
+  document.getElementById("tf-reset").addEventListener("click", () => { tfWrite(ID); tfApply(ID.slice(), true); });
+  document.querySelectorAll("#panel-transform .presets .btn").forEach((btn) =>
+    btn.addEventListener("click", () => { const m = btn.dataset.m.split(",").map(Number); tfWrite(m); tfApply(m, true); }));
+
+  // ===================================================================
+  //  INVERSE mode
+  // ===================================================================
+  const ivIds = ["inv-m0","inv-m1","inv-m2","inv-m3","inv-m4","inv-m5","inv-m6","inv-m7","inv-m8"];
+  const ivInputs = ivIds.map((i) => document.getElementById(i));
+  const ivRead = () => readM(ivInputs);
+  const ivWrite = (m) => ivInputs.forEach((el, k) => { el.value = LA.fmt(m[k]); });
+
+  function ivReadout() {
+    const A = ivRead();
+    const D = determinant(A);
+    const inv = inverse3(A);
+    document.getElementById("inv-det").textContent = LA.fmt(D);
+    const wrap = document.getElementById("inv-matrix-wrap");
+    const none = document.getElementById("inv-none");
+    const run = document.getElementById("inv-run");
+    if (!inv) {
+      wrap.hidden = true; none.hidden = false; run.disabled = true;
+    } else {
+      wrap.hidden = false; none.hidden = true; run.disabled = false;
+      for (let k = 0; k < 9; k++) document.getElementById("inv-r" + k).textContent = LA.fmt(inv[k]);
+    }
+    return inv;
+  }
+
+  // Static frame: A solid, faint A⁻¹ behind (if it exists).
+  function ivStatic() {
+    seqToken++;
+    tweening = false; tweenDone = null;
+    const A = ivRead();
+    const inv = ivReadout();
+    cur = A.slice();
+    ghost = inv ? inv.slice() : null;   // singular: no ghost, cube is drawn flat
+    setStageHint("viz3d.stageHint");
+  }
+
+  // Apply A from identity, pause, then return to identity via A⁻¹.
+  function ivRun() {
+    const inv = ivReadout();
+    const A = ivRead();
+    if (!inv) { ivStatic(); return; }
+    ghost = inv.slice();
+    if (LA.reduceMotion) { setStageHint("viz.inv.stageApply"); cur = A.slice(); return; }
+    const token = ++seqToken;
+    cur = ID.slice();
+    setStageHint("viz.inv.stageApply");
+    tweenTo(A.slice(), () => {
+      if (token !== seqToken) return;
+      setTimeout(() => {
+        if (token !== seqToken) return;
+        setStageHint("viz.inv.stageUndo");
+        tweenTo(ID.slice(), () => {
+          if (token !== seqToken) return;
+          setStageHint("viz3d.stageHint");
+        });
+      }, PAUSE);
+    });
+  }
+
+  ivInputs.forEach((el) => el.addEventListener("input", () => { if (mode === "inverse") ivStatic(); }));
+  document.getElementById("inv-run").addEventListener("click", ivRun);
+  document.getElementById("inv-reset").addEventListener("click", () => { ivWrite([2,0,0,0,2,0,0,0,2]); ivStatic(); });
+
+  // ===================================================================
+  //  COMPOSE mode
+  // ===================================================================
+  const cmAIds = ["cmp-a0","cmp-a1","cmp-a2","cmp-a3","cmp-a4","cmp-a5","cmp-a6","cmp-a7","cmp-a8"];
+  const cmBIds = ["cmp-b0","cmp-b1","cmp-b2","cmp-b3","cmp-b4","cmp-b5","cmp-b6","cmp-b7","cmp-b8"];
+  const cmAInputs = cmAIds.map((i) => document.getElementById(i));
+  const cmBInputs = cmBIds.map((i) => document.getElementById(i));
+  let orderAB = true;
+  const cmReadA = () => readM(cmAInputs);
+  const cmReadB = () => readM(cmBInputs);
+  const cmWriteA = (m) => cmAInputs.forEach((el, k) => { el.value = LA.fmt(m[k]); });
+  const cmWriteB = (m) => cmBInputs.forEach((el, k) => { el.value = LA.fmt(m[k]); });
+
+  function cmProduct() {
+    const A = cmReadA(), B = cmReadB();
+    return orderAB ? mul3(A, B) : mul3(B, A);
+  }
+  function cmReadout() {
+    const A = cmReadA(), B = cmReadB();
+    const P = cmProduct();
+    document.getElementById("cmp-r-detA").textContent = LA.fmt(determinant(A));
+    document.getElementById("cmp-r-detB").textContent = LA.fmt(determinant(B));
+    document.getElementById("cmp-r-detmul").textContent = LA.fmt(determinant(A) * determinant(B));
+    document.getElementById("cmp-r-detprod").textContent = LA.fmt(determinant(P));
+    document.getElementById("cmp-r-detprod-key").textContent = LA.t(orderAB ? "matmul.detProduct" : "matmul.detProductBA");
+  }
+  function cmStatic() {
+    seqToken++;
+    tweening = false; tweenDone = null;
+    ghost = null;
+    cmReadout();
+    cur = cmProduct().slice();
+    setStageHint("viz3d.stageHint");
+  }
+  function cmAnimate() {
+    cmReadout();
+    ghost = null;
+    const A = cmReadA(), B = cmReadB();
+    const first = orderAB ? B : A;
+    const finalP = cmProduct();
+    const firstKey = orderAB ? "matmul.applyingB" : "matmul.applyingA";
+    const secondKey = orderAB ? "matmul.thenA" : "matmul.thenB";
+    if (LA.reduceMotion) { setStageHint(secondKey); cur = finalP.slice(); return; }
+    const token = ++seqToken;
+    cur = ID.slice();
+    setStageHint(firstKey);
+    tweenTo(first.slice(), () => {
+      if (token !== seqToken) return;
+      setTimeout(() => {
+        if (token !== seqToken) return;
+        setStageHint(secondKey);
+        tweenTo(finalP.slice(), () => {
+          if (token !== seqToken) return;
+          setStageHint("viz3d.stageHint");
+        });
+      }, PAUSE);
+    });
+  }
+  function cmOrderLabel() {
+    document.getElementById("cmp-order").textContent = LA.t(orderAB ? "matmul.showBA" : "matmul.showAB");
+  }
+  cmAInputs.concat(cmBInputs).forEach((el) => el.addEventListener("input", () => { if (mode === "compose") cmStatic(); }));
+  document.getElementById("cmp-animate").addEventListener("click", cmAnimate);
+  document.getElementById("cmp-order").addEventListener("click", () => { orderAB = !orderAB; cmOrderLabel(); cmStatic(); });
+  document.getElementById("cmp-reset").addEventListener("click", () => {
+    orderAB = true;
+    cmWriteA([0,-1,0, 1,0,0, 0,0,1]); cmWriteB([1,0,1, 0,1,0, 0,0,1]);
+    cmOrderLabel(); cmStatic();
+  });
+  document.querySelectorAll("#panel-compose .presets .btn").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const A = btn.dataset.a.split(",").map(Number);
+      const B = btn.dataset.b.split(",").map(Number);
+      cmWriteA(A); cmWriteB(B); cmStatic();
+    }));
+
+  // ===================================================================
+  //  Camera interaction (unconditional: orbit works in every tab)
+  // ===================================================================
   canvas.addEventListener("pointerdown", (e) => {
-    dragging = true; idleSpin = false; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId);
+    dragging = true; idleSpin = false; lastX = e.clientX; lastY = e.clientY;
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
   });
   canvas.addEventListener("pointermove", (e) => {
     if (!dragging) return;
@@ -297,18 +625,63 @@
     zoom = Math.max(0.45, Math.min(2.8, zoom));
   }, { passive: false });
 
-  inputs.forEach((el) => el.addEventListener("input", () => setTarget(readInputs(), true)));
-  document.getElementById("reset").addEventListener("click", () => { writeInputs([1,0,0,0,1,0,0,0,1]); setTarget([1,0,0,0,1,0,0,0,1], true); });
-  document.getElementById("animate").addEventListener("click", () => { const m = readInputs(); cur = [1,0,0,0,1,0,0,0,1]; setTarget(m, true); });
-  document.querySelectorAll(".presets .btn").forEach((btn) => btn.addEventListener("click", () => {
-    const m = btn.dataset.m.split(",").map(Number); writeInputs(m); setTarget(m, true);
-  }));
+  // ===================================================================
+  //  Tabs
+  // ===================================================================
+  let mode = "transform";
+  const tabIds = ["transform", "inverse", "compose"];
+  const tabEls = tabIds.map((id) => document.getElementById("tab-" + id));
 
-  LA.onThemeChange(() => { COL = LA.canvasColors(); });
-  LA.onLangChange(() => updateReadout(cur));
+  function enterMode(name) {
+    mode = name;
+    seqToken++;                  // cancel any cross-mode sequence
+    tweening = false; tweenDone = null;
+    ghost = null;
+    if (name === "transform") { setStageHint("viz3d.stageHint"); tfApply(tfRead(), false); }
+    else if (name === "inverse") { ivStatic(); }
+    else { cmOrderLabel(); cmStatic(); }
+  }
+
+  function selectTab(name, focus) {
+    tabIds.forEach((id) => {
+      const t = document.getElementById("tab-" + id);
+      const p = document.getElementById("panel-" + id);
+      const on = id === name;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      p.hidden = !on;
+    });
+    if (focus) document.getElementById("tab-" + name).focus();
+    try { localStorage.setItem("la-3d-tab", name); } catch (e) {}
+    enterMode(name);
+  }
+
+  tabEls.forEach((tEl, idx) => {
+    tEl.addEventListener("click", () => selectTab(tabIds[idx], false));
+    tEl.addEventListener("keydown", (ev) => {
+      let ni = -1;
+      if (ev.key === "ArrowRight") ni = (idx + 1) % tabIds.length;
+      else if (ev.key === "ArrowLeft") ni = (idx - 1 + tabIds.length) % tabIds.length;
+      else if (ev.key === "Home") ni = 0;
+      else if (ev.key === "End") ni = tabIds.length - 1;
+      if (ni >= 0) { ev.preventDefault(); selectTab(tabIds[ni], true); }
+    });
+  });
+
+  // ---------- theme / language / resize ----------
+  LA.onThemeChange(() => { COL = LA.canvasColors(); });   // frame() redraws
+  LA.onLangChange(() => {
+    if (mode === "transform") tfReadout(tfRead());
+    else if (mode === "inverse") ivReadout();
+    else { cmReadout(); cmOrderLabel(); }
+  });
   window.addEventListener("resize", resize);
-  resize();
-  updateReadout(cur);
+
+  // ---------- init (synchronous first frame) ----------
+  let initial = "transform";
+  try { const s = localStorage.getItem("la-3d-tab"); if (s && tabIds.indexOf(s) >= 0) initial = s; } catch (e) {}
+  resize();                 // sizes canvas + draws one static frame
+  selectTab(initial, false);
   requestAnimationFrame(frame);
 })();
 </script>
