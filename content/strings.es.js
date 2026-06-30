@@ -1,4 +1,4 @@
-/* UI chrome strings — Español. A complete overlay (proves the i18n plumbing).
+/* UI chrome strings - Español. A complete overlay (proves the i18n plumbing).
    Any missing key falls back to English automatically (see LA.t in shared.js). */
 (function () {
   var S = (window.LA_STRINGS = window.LA_STRINGS || {});
@@ -78,7 +78,7 @@
     "viz.kGoesTo": "k̂ va a",
 
     "viz2d.title": "Matriz de transformación",
-    "viz2d.sub": "Cada <em>columna</em> dice dónde aterriza un vector de la base. La malla se dobla para seguirla. Véase <a href=\"glossary.html#matrix\">matriz</a> y <a href=\"glossary.html#determinant\">determinante</a>.",
+    "viz2d.sub": "Cada <em>columna</em> dice dónde aterriza un vector de la base. La malla se dobla para seguirla. Véase <a href=\"glossary.html#matrix\">matriz</a> &amp; <a href=\"glossary.html#determinant\">determinante</a>.",
     "viz2d.iLands": "î aterriza aquí",
     "viz2d.jLands": "ĵ aterriza aquí",
     "viz2d.areaScale": "Escala de área",
@@ -96,7 +96,7 @@
     "viz3d.title": "Transformación 3×3",
     "viz3d.sub": "Cada <em>columna</em> es donde aterriza un vector de la base. El <a href=\"glossary.html#determinant\">determinante</a> es ahora un <a href=\"glossary.html#area-volume\">volumen</a> con signo.",
     "viz3d.volScale": "Escala de volumen",
-    "viz3d.hint": "La caja sombreada es la imagen del cubo unidad; su volumen con signo es el determinante. Volumen cero significa que el espacio se aplastó (<a href=\"glossary.html#singular\">singular</a>). Negativo significa que la lateralidad se invirtió.",
+    "viz3d.hint": "La caja sombreada es la imagen del cubo unidad; su volumen con signo es el determinante. Volumen cero significa que el espacio se aplastó (<a href=\"glossary.html#singular\">singular</a>). Negativo significa que la quiralidad se invirtió.",
     "viz3d.stageHint": "Arrastra para orbitar · rueda para acercar",
     "viz3d.p.rotZ90": "Rotar z 90°",
     "viz3d.p.rotY45": "Rotar y 45°",
@@ -104,5 +104,39 @@
     "viz3d.p.scale15": "Escalar 1.5×",
     "viz3d.p.reflectZ": "Reflejar z",
     "viz3d.p.squash": "Aplastar al plano",
+
+    "nav.matmul": "Multiplicar",
+    "keyideas.label": "Ideas clave para recordar",
+    "glossary.theorems": "Teoremas",
+
+    "home.matmul.kicker": "Interactivo",
+    "home.matmul.title": "Multiplicación de matrices",
+    "home.matmul.desc": "Ve un producto como composición: haz B, luego A. Observa por qué importa el orden y por qué se multiplican los determinantes.",
+
+    "matmul.title": "Multiplicar = componer",
+    "matmul.sub": "Un producto de matrices es una <em>composición</em>: AB significa \"haz B primero, luego A\". El orden importa, así que AB normalmente no es BA. Véase <a href=\"glossary.html#matrix\">matriz</a> &amp; <a href=\"glossary.html#determinant\">determinante</a>.",
+    "matmul.stageHint": "Aplica B primero, luego A. La malla lleva el resultado de B a A.",
+    "matmul.stageHintBA": "Aplica A primero, luego B. La malla lleva el resultado de A a B.",
+    "matmul.matrixA": "Matriz A (aplicada en segundo lugar)",
+    "matmul.matrixB": "Matriz B (aplicada primero)",
+    "matmul.animate": "Animar composición",
+    "matmul.showBA": "Mostrar B∘A en su lugar",
+    "matmul.showAB": "Mostrar A∘B en su lugar",
+    "matmul.applyingB": "Etapa 1: aplicando B",
+    "matmul.thenA": "Etapa 2: luego A",
+    "matmul.applyingA": "Etapa 1: aplicando A",
+    "matmul.thenB": "Etapa 2: luego B",
+    "matmul.product": "Producto AB",
+    "matmul.productBA": "Producto BA",
+    "matmul.detA": "det(A)",
+    "matmul.detB": "det(B)",
+    "matmul.detProductOf": "det(A) · det(B)",
+    "matmul.detProduct": "det(AB)",
+    "matmul.detProductBA": "det(BA)",
+    "matmul.hint": "Observa que det(AB) = det(A) · det(B), siempre. Cambiar el orden cambia la matriz producto (AB ≠ BA) pero nunca su determinante, ya que det(AB) = det(BA). La región sombreada es la imagen del cuadrado unidad; véase <a href=\"glossary.html#determinant\">determinante</a>.",
+    "matmul.p.rotShear": "A: rotar 90°, B: cizalla x",
+    "matmul.p.scaleRot": "A: escalar 2×, B: rotar 45°",
+    "matmul.p.shearShear": "A: cizalla x, B: cizalla y",
+    "matmul.p.flipRot": "A: reflejar y, B: rotar 90°",
   };
 })();
