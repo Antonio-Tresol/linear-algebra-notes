@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Column space, null space &amp; rank · Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/shared.css?v=20260629h">
+
+<script src="assets/shared.js?v=20260629h"></script>
+</head>
+<body data-page="concepts">
+
+<header data-nav></header>
+
+<section class="viz">
+  <div class="stage" aria-hidden="false">
+    <canvas id="c" role="img" aria-label="A coordinate grid for a 2 by 2 matrix A. The two columns of A are drawn as vectors from the origin. The column space (the reachable outputs) is shaded as a plane, a line, or a point. The null space (the inputs A sends to zero) is drawn as a point, a line, or the whole plane."></canvas>
+    <div class="stage-hint" id="stage-hint" data-i18n="sub.stageHint">Columns span the column space. The null space is what gets crushed to zero.</div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h1 data-i18n="sub.title">Column space, null space &amp; rank</h1>
+      <p class="sub" data-i18n-html="sub.sub">A matrix <em>A</em> maps inputs to outputs. The <em>column space</em> is everything it can reach; the <em>null space</em> is everything it crushes to zero. See <a href="glossary.html#singular">singular</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
+
+      <div class="matrix-row">
+        <div class="bracket">[</div>
+        <div class="cells cells--2">
+          <input id="m-a" type="number" step="0.1" value="2" aria-label="a, top-left">
+          <input id="m-b" type="number" step="0.1" value="1" aria-label="b, top-right">
+          <input id="m-c" type="number" step="0.1" value="-1" aria-label="c, bottom-left">
+          <input id="m-d" type="number" step="0.1" value="1" aria-label="d, bottom-right">
+        </div>
+      </div>
+
+      <div class="col-key col-key--3">
+        <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="sub.key.col1">column 1</span></span>
+        <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="sub.key.col2">column 2</span></span>
+        <span><span class="swatch" style="background:var(--vec-flip)"></span> <span data-i18n="sub.key.null">null space</span></span>
+      </div>
+
+      <div class="buttons">
+        <button id="m-reset" class="btn btn--primary" data-i18n="viz.reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.presets">Presets</p>
+      <div class="presets">
+        <button class="btn" data-m="2,1,-1,1" data-i18n="sub.p.fullRank">Full rank</button>
+        <button class="btn" data-m="1,2,2,4" data-i18n="sub.p.rank1">Rank 1 (singular)</button>
+        <button class="btn" data-m="0,0,0,0" data-i18n="sub.p.zero">Zero matrix</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.readout">Readout</p>
+      <div class="readout">
+        <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="r-det">3.00</span></div>
+        <div class="line"><span class="k" data-i18n="sub.rank">Rank</span><span class="v" id="r-rank">2</span></div>
+        <div class="line"><span class="k" data-i18n="sub.colspace">Column space</span><span class="v" id="r-col">a plane</span></div>
+        <div class="line"><span class="k" data-i18n="sub.nullspace">Null space</span><span class="v" id="r-null">only the origin</span></div>
+        <div class="line"><span class="k" data-i18n="sub.invertible">Invertible</span><span class="v orient" id="r-inv">yes, full rank</span></div>
+      </div>
+      <p class="hint" id="r-chain" style="font-weight:600;color:var(--text)" data-i18n="sub.chain.full">det &ne; 0, so rank = 2, the null space is just {0}, and A is invertible.</p>
+      <p class="hint" data-i18n-html="sub.hint">The chain is one statement four ways: <strong>det = 0 &nbsp;&hArr;&nbsp; rank &lt; 2 &nbsp;&hArr;&nbsp; null space is more than {0} &nbsp;&hArr;&nbsp; not invertible</strong>. See <a href="glossary.html#singular">singular</a>.</p>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="sub.keyidea.label">Key idea</p>
+      <p class="hint" data-i18n-html="sub.keyidea.body">When det = 0 the columns are dependent, so the output space collapses and loses a dimension. The null space is exactly what gets crushed to zero: bigger collapse, bigger null space.</p>
+      <p class="keyidea__cite" id="cite-line"></p>
+    </div>
+  </div>
+</section>
+
+<footer data-footer></footer>
+
+<script src="content/strings.en.js?v=20260629h"></script>
+<script src="content/strings.es.js?v=20260629h"></script>
+<script src="content/sources.data.js?v=20260629h"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script>
+// Localise [data-i18n]/[data-i18n-html] text + paint the cite line; re-run on language flip.
+(function () {
+  function citeChip(id) {
+    var s = (window.LA_SOURCES || {})[id];
+    if (!s) return "";
+    return '<a href="' + s.url + '" target="_blank" rel="noopener">' + s.short + ": " + s.title + " ↗</a>";
+  }
+  function paint() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", LA.t(el.getAttribute("data-i18n-aria"))); });
+    var cl = document.getElementById("cite-line");
+    if (cl) cl.innerHTML = LA.t("sub.cite.prefix") + " " + citeChip("3b1b-inverse-matrices") + " &middot; " + citeChip("strang");
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  LA.onLangChange(paint);
+})();
+</script>
+<script>
+(function () {
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+  let COL = LA.canvasColors();
+
+  let W = 0, H = 0, cx = 0, cy = 0, scale = 50;
+  const GRID_N = 12;
+  const EPS = 1e-9;
+
+  const S = (x, y) => [cx + x * scale, cy - y * scale];
+  const det = (m) => m[0] * m[3] - m[1] * m[2];
+
+  // --- linear-algebra facts about A = [a,b,c,d] = [[a,b],[c,d]] ---
+  // rank: 2 if det != 0; else 1 if any entry nonzero; else 0.
+  function rankOf(m) {
+    if (Math.abs(det(m)) > EPS) return 2;
+    if (m.some((v) => Math.abs(v) > EPS)) return 1;
+    return 0;
+  }
+  // Column-space direction (rank 1): the nonzero column, as a unit vector.
+  // Columns are (a,c) and (b,d).
+  function colDir(m) {
+    const c1 = [m[0], m[2]], c2 = [m[1], m[3]];
+    const pick = (Math.hypot(c1[0], c1[1]) >= Math.hypot(c2[0], c2[1])) ? c1 : c2;
+    const n = Math.hypot(pick[0], pick[1]);
+    return n < EPS ? null : [pick[0] / n, pick[1] / n];
+  }
+  // Null-space direction (rank 1): x with Ax = 0, i.e. x perpendicular to the
+  // rows. Rows are (a,b) and (c,d); rotate the larger row 90deg: (p,q)->(-q,p).
+  function nullDir(m) {
+    const r1 = [m[0], m[1]], r2 = [m[2], m[3]];
+    const row = (Math.hypot(r1[0], r1[1]) >= Math.hypot(r2[0], r2[1])) ? r1 : r2;
+    const d = [-row[1], row[0]];
+    const n = Math.hypot(d[0], d[1]);
+    return n < EPS ? null : [d[0] / n, d[1] / n];
+  }
+
+  function resize() {
+    const dim = LA.fitCanvas(canvas, ctx);
+    W = dim.W; H = dim.H;
+    cx = W / 2; cy = H / 2;
+    scale = Math.max(28, Math.min(W, H) / (2 * 6.5));
+    draw();
+  }
+
+  function drawGridLines() {
+    ctx.save();
+    ctx.globalAlpha = 0.5; ctx.strokeStyle = COL.gridOrig; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = -GRID_N; i <= GRID_N; i++) {
+      let s1 = S(i, -GRID_N), s2 = S(i, GRID_N);
+      ctx.moveTo(s1[0], s1[1]); ctx.lineTo(s2[0], s2[1]);
+      let t1 = S(-GRID_N, i), t2 = S(GRID_N, i);
+      ctx.moveTo(t1[0], t1[1]); ctx.lineTo(t2[0], t2[1]);
+    }
+    ctx.stroke(); ctx.restore();
+  }
+
+  function drawAxes() {
+    ctx.save();
+    ctx.strokeStyle = COL.axis; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    let l = S(-GRID_N, 0), r = S(GRID_N, 0);
+    ctx.moveTo(l[0], l[1]); ctx.lineTo(r[0], r[1]);
+    let b = S(0, -GRID_N), t = S(0, GRID_N);
+    ctx.moveTo(b[0], b[1]); ctx.lineTo(t[0], t[1]);
+    ctx.stroke(); ctx.restore();
+  }
+
+  // Faintly shade the entire plane (used for a rank-2 column space, which is
+  // all of R^2, and for a rank-0 null space, which is also all of R^2).
+  function shadePlane(color, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha; ctx.fillStyle = color;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  // Draw a line through the origin in unit direction d, both ways to the edge,
+  // with a faint band around it so a "line subspace" reads as a subspace.
+  function drawLine(d, color, width, alpha) {
+    const far = GRID_N * 1.6;
+    const p1 = S(d[0] * far, d[1] * far), p2 = S(-d[0] * far, -d[1] * far);
+    ctx.save();
+    ctx.globalAlpha = alpha; ctx.strokeStyle = color;
+    ctx.lineWidth = width; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.stroke();
+    ctx.restore();
+  }
+
+  function dot(wx, wy, color, r) {
+    const p = S(wx, wy);
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function arrow(x, y, color, label) {
+    let o = S(0, 0), e = S(x, y);
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.5; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+    const ang = Math.atan2(o[1] - e[1], e[0] - o[0]);
+    const len = Math.hypot(e[0] - o[0], e[1] - o[1]);
+    if (len > 6) {
+      const hs = 12;
+      ctx.beginPath();
+      ctx.moveTo(e[0], e[1]);
+      ctx.lineTo(e[0] - hs * Math.cos(ang - 0.5), e[1] + hs * Math.sin(ang - 0.5));
+      ctx.lineTo(e[0] - hs * Math.cos(ang + 0.5), e[1] + hs * Math.sin(ang + 0.5));
+      ctx.closePath(); ctx.fill();
+    }
+    if (label) {
+      ctx.fillStyle = color;
+      ctx.font = "600 15px " + COL.mono;
+      ctx.fillText(label, e[0] + 8, e[1] - 8);
+    }
+    ctx.restore();
+  }
+
+  let M = [2, 1, -1, 1];
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const rank = rankOf(M);
+
+    // --- Column space (the reachable outputs / image), in the i-hat colour. ---
+    if (rank === 2) {
+      shadePlane(COL.iHat, 0.07);
+    } else if (rank === 1) {
+      const cd = colDir(M);
+      if (cd) drawLine(cd, COL.iHat, 18, 0.12);   // faint band
+    }
+    // rank 0: column space is just the origin -> nothing to shade.
+
+    drawGridLines();
+    drawAxes();
+
+    // --- Null space (the inputs crushed to zero), in the flip colour. ---
+    if (rank === 0) {
+      shadePlane(COL.flip, 0.10);                 // whole plane
+    } else if (rank === 1) {
+      const nd = nullDir(M);
+      if (nd) drawLine(nd, COL.flip, 3, 0.95);    // a line through the origin
+    }
+    // rank 2: null space is {0}; mark the origin below.
+
+    // Crisp column-space line on top of its band (rank 1) so it stays legible.
+    if (rank === 1) {
+      const cd = colDir(M);
+      if (cd) drawLine(cd, COL.iHat, 2.4, 0.9);
+    }
+
+    // The two columns of A as vectors from the origin.
+    arrow(M[0], M[2], COL.iHat, "c₁");
+    arrow(M[1], M[3], COL.jHat, "c₂");
+
+    // Mark the origin: the whole null space when full rank, else just a point.
+    dot(0, 0, rank === 2 ? COL.flip : COL.muted, rank === 2 ? 5 : 3.5);
+  }
+
+  // ---------- inputs / readout ----------
+  const el = {
+    a: document.getElementById("m-a"), b: document.getElementById("m-b"),
+    c: document.getElementById("m-c"), d: document.getElementById("m-d"),
+  };
+  const readM = () => {
+    const v = (e) => { const n = parseFloat(e.value); return isFinite(n) ? n : 0; };
+    return [v(el.a), v(el.b), v(el.c), v(el.d)];
+  };
+  const writeM = (m) => {
+    el.a.value = LA.fmt(m[0]); el.b.value = LA.fmt(m[1]);
+    el.c.value = LA.fmt(m[2]); el.d.value = LA.fmt(m[3]);
+  };
+
+  function readout() {
+    const rank = rankOf(M);
+    const D = det(M);
+    document.getElementById("r-det").textContent = LA.fmt(D);
+    document.getElementById("r-rank").textContent = String(rank);
+
+    const colKey = rank === 2 ? "sub.col.plane" : rank === 1 ? "sub.col.line" : "sub.col.point";
+    const nullKey = rank === 2 ? "sub.null.zero" : rank === 1 ? "sub.null.line" : "sub.null.plane";
+    document.getElementById("r-col").textContent = LA.t(colKey);
+    document.getElementById("r-null").textContent = LA.t(nullKey);
+
+    const inv = document.getElementById("r-inv");
+    inv.className = "v orient";
+    if (rank === 2) { inv.classList.add("preserved"); inv.textContent = LA.t("sub.inv.yes"); }
+    else { inv.classList.add("degenerate"); inv.textContent = LA.t("sub.inv.no"); }
+
+    const chain = document.getElementById("r-chain");
+    chain.textContent = LA.t(rank === 2 ? "sub.chain.full" : "sub.chain.singular");
+  }
+
+  function applyM(m) {
+    M = m.slice();
+    readout();
+    draw();
+  }
+
+  Object.values(el).forEach((e) => e.addEventListener("input", () => applyM(readM())));
+  document.getElementById("m-reset").addEventListener("click", () => { writeM([2, 1, -1, 1]); applyM([2, 1, -1, 1]); });
+  document.querySelectorAll(".presets .btn").forEach((btn) =>
+    btn.addEventListener("click", () => { const m = btn.dataset.m.split(",").map(Number); writeM(m); applyM(m); }));
+
+  // ---------- theme / language / resize ----------
+  LA.onThemeChange(() => { COL = LA.canvasColors(); draw(); });
+  LA.onLangChange(() => readout());
+  window.addEventListener("resize", resize);
+
+  // ---------- init (synchronous first frame) ----------
+  M = readM();
+  readout();
+  resize();
+})();
+</script>
+</body>
+</html>

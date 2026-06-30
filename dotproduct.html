@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The dot product · Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/shared.css?v=20260629h">
+
+<script src="assets/shared.js?v=20260629h"></script>
+<style>
+  /* Dragging the vector tips is the whole interaction, so stop the page
+     scrolling under a touch drag. */
+  #c { touch-action: none; }
+  .dot-cite { font-family: var(--font-display); font-size: 11.5px; color: var(--muted); margin: 12px 0 0; }
+  .dot-cite a { color: var(--vec-j); }
+  .readout .v.sign-pos { color: var(--vec-k); }
+  .readout .v.sign-neg { color: var(--vec-flip); }
+  .readout .v.sign-zero { color: var(--muted); }
+  .dot-flag {
+    margin: 10px 0 0; padding: 8px 11px; border-radius: 8px;
+    font-family: var(--font-display); font-size: 12.5px; line-height: 1.45;
+    background: color-mix(in srgb, var(--vec-j) 12%, transparent);
+    color: var(--text);
+  }
+  .dot-flag[hidden] { display: none; }
+</style>
+</head>
+<body data-page="concepts">
+
+<header data-nav></header>
+
+<section class="viz">
+  <div class="stage" aria-hidden="false">
+    <canvas id="c" role="img" aria-label="Two vectors u and v drawn from the origin on a coordinate grid. A dashed perpendicular drops from the tip of u onto the line through v, marking the projection of u onto v. The dot product equals the signed length of that projection times the length of v."></canvas>
+    <div class="stage-hint" id="stage-hint" data-i18n="dot.stageHint">Drag either arrow tip. Watch the projection of u onto v.</div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h1 data-i18n="dot.title">The dot product</h1>
+      <p class="sub" data-i18n-html="dot.sub">The dot product <em>u · v</em> measures how much one vector points along the other. Drag the tips. See <a href="glossary.html#dot-product">dot product</a>.</p>
+
+      <div class="col-key col-key--2">
+        <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="dot.vecU">vector u</span></span>
+        <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="dot.vecV">vector v</span></span>
+      </div>
+
+      <div class="buttons">
+        <button id="dot-swap" class="btn" data-i18n="dot.swap" aria-label="Swap which vector is projected onto which">Project v onto u instead</button>
+        <button id="dot-reset" class="btn" data-i18n="viz.reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.presets">Presets</p>
+      <div class="presets">
+        <button class="btn" data-u="2,0" data-v="3,0" data-i18n="dot.p.aligned" aria-label="Aligned vectors, positive dot product">Aligned</button>
+        <button class="btn" data-u="2,0" data-v="0,3" data-i18n="dot.p.perp" aria-label="Perpendicular vectors, zero dot product">Perpendicular</button>
+        <button class="btn" data-u="2,0" data-v="-3,0" data-i18n="dot.p.opposed" aria-label="Opposed vectors, negative dot product">Opposed</button>
+        <button class="btn" data-u="3,1" data-v="2,3" data-i18n="dot.p.oblique" aria-label="Oblique vectors">Oblique</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.readout">Readout</p>
+      <div class="readout">
+        <div class="line"><span class="k" data-i18n="dot.vecU">vector u</span><span class="v" id="dot-r-u">(2, 0)</span></div>
+        <div class="line"><span class="k" data-i18n="dot.vecV">vector v</span><span class="v" id="dot-r-v">(3, 0)</span></div>
+        <div class="line"><span class="k" data-i18n="dot.normU">‖u‖</span><span class="v" id="dot-r-nu">2.00</span></div>
+        <div class="line"><span class="k" data-i18n="dot.normV">‖v‖</span><span class="v" id="dot-r-nv">3.00</span></div>
+        <div class="line"><span class="k" data-i18n="dot.angle">angle θ</span><span class="v" id="dot-r-theta">0.0°</span></div>
+        <div class="line"><span class="k" id="dot-r-proj-key" data-i18n="dot.projUonV">projection of u onto v</span><span class="v" id="dot-r-proj">2.00</span></div>
+        <div class="line"><span class="k" data-i18n="dot.dot">u · v</span><span class="v sign-pos" id="dot-r-dot">6.00</span></div>
+      </div>
+      <div class="dot-flag" id="dot-perp-flag" hidden data-i18n="dot.perpFlag">u · v = 0: the vectors are perpendicular. Neither points along the other at all.</div>
+      <p class="hint" id="dot-sign-hint" data-i18n="dot.signAcute">The angle is acute, so u · v is positive: u leans the same way as v.</p>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="dot.geomLabel">The geometric meaning</p>
+      <p class="hint" data-i18n-html="dot.geomBody">Drop a perpendicular from the tip of u onto the line through v. The signed length of that shadow is <em>‖u‖ cos θ</em>. Multiply it by <em>‖v‖</em> and you get the dot product: <em>u · v = ‖u‖‖v‖ cos θ</em>. It is positive when the angle is acute, zero when the vectors are perpendicular, and negative when the angle is obtuse.</p>
+      <p class="hint" data-i18n-html="dot.dualityNote">Following 3Blue1Brown's "Dot products and duality": taking u · v is the same as applying the row vector <em>uᵀ</em>, a 1×2 matrix that maps the plane to the number line, to v. The dot product hides a linear map.</p>
+      <p class="dot-cite">▶ <a href="https://www.3blue1brown.com/lessons/dot-products" target="_blank" rel="noopener">3Blue1Brown: Dot products and duality ↗</a></p>
+    </div>
+  </div>
+</section>
+
+<footer data-footer></footer>
+
+<script src="content/strings.en.js?v=20260629h"></script>
+<script src="content/strings.es.js?v=20260629h"></script>
+<script src="content/sources.data.js?v=20260629h"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script>
+// Localise [data-i18n]/[data-i18n-html]/[data-i18n-aria]; re-run on language flip.
+(function () {
+  function paint() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", LA.t(el.getAttribute("data-i18n-aria"))); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  LA.onLangChange(paint);
+})();
+</script>
+<script>
+(function () {
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+  let COL = LA.canvasColors();
+  const EPS = 1e-6;
+
+  // ---------- world state ----------
+  // u (amber) and v (teal), both anchored at the origin; only the tips move.
+  let u = { x: 2, y: 0 };
+  let v = { x: 3, y: 0 };
+  // projectUonV === true: drop u's tip onto v's line (default). false swaps roles.
+  let projectUonV = true;
+
+  let W = 0, H = 0, cx = 0, cy = 0, scale = 50;
+  const GRID_N = 12;
+
+  const S = (x, y) => [cx + x * scale, cy - y * scale];
+  const Sinv = (sx, sy) => [(sx - cx) / scale, (cy - sy) / scale];
+
+  function resize() {
+    const dim = LA.fitCanvas(canvas, ctx);
+    W = dim.W; H = dim.H;
+    cx = W / 2; cy = H / 2;
+    scale = Math.max(28, Math.min(W, H) / (2 * 6.5));
+    draw();
+  }
+
+  // ---------- vector maths ----------
+  const dot = (a, b) => a.x * b.x + a.y * b.y;
+  const norm = (a) => Math.hypot(a.x, a.y);
+
+  // ---------- low-level drawing ----------
+  function drawGrid() {
+    ctx.save();
+    ctx.globalAlpha = 0.5; ctx.strokeStyle = COL.gridOrig; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = -GRID_N; i <= GRID_N; i++) {
+      let a = S(i, -GRID_N), b = S(i, GRID_N);
+      ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
+      let c = S(-GRID_N, i), d = S(GRID_N, i);
+      ctx.moveTo(c[0], c[1]); ctx.lineTo(d[0], d[1]);
+    }
+    ctx.stroke(); ctx.restore();
+  }
+
+  function drawAxes() {
+    ctx.save();
+    ctx.strokeStyle = COL.axis; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    let l = S(-GRID_N, 0), r = S(GRID_N, 0);
+    ctx.moveTo(l[0], l[1]); ctx.lineTo(r[0], r[1]);
+    let b = S(0, -GRID_N), t = S(0, GRID_N);
+    ctx.moveTo(b[0], b[1]); ctx.lineTo(t[0], t[1]);
+    ctx.stroke(); ctx.restore();
+  }
+
+  function arrow(vx, vy, color, label) {
+    let o = S(0, 0), e = S(vx, vy);
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.5; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+    const ang = Math.atan2(o[1] - e[1], e[0] - o[0]);
+    const len = Math.hypot(e[0] - o[0], e[1] - o[1]);
+    if (len > 6) {
+      const hs = 12;
+      ctx.beginPath();
+      ctx.moveTo(e[0], e[1]);
+      ctx.lineTo(e[0] - hs * Math.cos(ang - 0.5), e[1] + hs * Math.sin(ang - 0.5));
+      ctx.lineTo(e[0] - hs * Math.cos(ang + 0.5), e[1] + hs * Math.sin(ang + 0.5));
+      ctx.closePath(); ctx.fill();
+    }
+    // a fat grab dot at the tip so it reads as draggable
+    ctx.beginPath(); ctx.arc(e[0], e[1], 5, 0, Math.PI * 2); ctx.fill();
+    if (label) {
+      ctx.fillStyle = color;
+      ctx.font = "600 16px " + COL.mono;
+      ctx.fillText(label, e[0] + 10, e[1] - 10);
+    }
+    ctx.restore();
+  }
+
+  // Draw the projection of `a` onto the direction of `b`:
+  //  - the projected segment along b (from origin), coloured by sign,
+  //  - a dashed perpendicular from a's tip to its foot on b's line.
+  function drawProjection(a, b) {
+    const nb2 = dot(b, b);
+    if (nb2 < EPS) return;                 // b is the zero vector: no line to project onto
+    const t = dot(a, b) / nb2;             // scalar multiple of b giving the foot
+    const foot = { x: t * b.x, y: t * b.y };
+    const sd = dot(a, b);                  // sign of the projection
+    const col = sd > EPS ? COL.kHat : (sd < -EPS ? COL.flip : COL.muted);
+
+    const so = S(0, 0), sf = S(foot.x, foot.y), sa = S(a.x, a.y);
+
+    // dashed perpendicular drop from the tip of a to the foot
+    ctx.save();
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = COL.muted; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.9;
+    ctx.beginPath(); ctx.moveTo(sa[0], sa[1]); ctx.lineTo(sf[0], sf[1]); ctx.stroke();
+    ctx.restore();
+
+    // the projected segment along b's direction, drawn thick beneath the arrows
+    ctx.save();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = col; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.globalAlpha = 0.42;
+    ctx.beginPath(); ctx.moveTo(so[0], so[1]); ctx.lineTo(sf[0], sf[1]); ctx.stroke();
+    ctx.restore();
+
+    // a small right-angle tick at the foot (only when the foot is off the origin)
+    if (Math.hypot(foot.x, foot.y) > 0.05 && norm(a) > 0.05) {
+      drawRightAngle(foot, b, a);
+    }
+  }
+
+  // little square mark at `foot` between the b-direction and the a-tip direction
+  function drawRightAngle(foot, b, a) {
+    const lb = norm(b); if (lb < EPS) return;
+    let bx = b.x / lb, by = b.y / lb;               // unit along b
+    // direction from foot to a's tip
+    let px = a.x - foot.x, py = a.y - foot.y;
+    const lp = Math.hypot(px, py); if (lp < EPS) return;
+    px /= lp; py /= lp;
+    const s = 0.32;                                  // world-size of the tick
+    const p0 = S(foot.x + bx * s, foot.y + by * s);
+    const p1 = S(foot.x + (bx + px) * s, foot.y + (by + py) * s);
+    const p2 = S(foot.x + px * s, foot.y + py * s);
+    ctx.save();
+    ctx.strokeStyle = COL.muted; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.85;
+    ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.stroke();
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawGrid();
+    drawAxes();
+    // projection beneath the arrows
+    if (projectUonV) drawProjection(u, v);
+    else drawProjection(v, u);
+    arrow(v.x, v.y, COL.jHat, "v");
+    arrow(u.x, u.y, COL.iHat, "u");
+  }
+
+  // ---------- readout ----------
+  function setSignClass(el, sign) {
+    el.classList.remove("sign-pos", "sign-neg", "sign-zero");
+    el.classList.add(sign > 0 ? "sign-pos" : (sign < 0 ? "sign-neg" : "sign-zero"));
+  }
+
+  function readout() {
+    const d = dot(u, v);
+    const nu = norm(u), nv = norm(v);
+    document.getElementById("dot-r-u").textContent = "(" + LA.fmt(u.x) + ", " + LA.fmt(u.y) + ")";
+    document.getElementById("dot-r-v").textContent = "(" + LA.fmt(v.x) + ", " + LA.fmt(v.y) + ")";
+    document.getElementById("dot-r-nu").textContent = LA.fmt(nu);
+    document.getElementById("dot-r-nv").textContent = LA.fmt(nv);
+
+    // angle: guard the zero vector and clamp cos to [-1, 1] for float drift
+    const thetaEl = document.getElementById("dot-r-theta");
+    if (nu < EPS || nv < EPS) {
+      thetaEl.textContent = "—";
+    } else {
+      let c = d / (nu * nv);
+      c = Math.max(-1, Math.min(1, c));
+      const deg = Math.acos(c) * 180 / Math.PI;
+      thetaEl.textContent = LA.fmt(deg) + "°";
+    }
+
+    // projection: signed length of the projected vector onto the other's direction
+    const projEl = document.getElementById("dot-r-proj");
+    const projKey = document.getElementById("dot-r-proj-key");
+    const ontoNorm = projectUonV ? nv : nu;          // ‖v‖ when projecting u onto v
+    projKey.textContent = LA.t(projectUonV ? "dot.projUonV" : "dot.projVonU");
+    if (ontoNorm < EPS) {
+      projEl.textContent = "—";
+    } else {
+      projEl.textContent = LA.fmt(d / ontoNorm);     // = ‖u‖cosθ (signed)
+    }
+
+    // dot product, coloured by sign
+    const dotEl = document.getElementById("dot-r-dot");
+    dotEl.textContent = LA.fmt(d);
+    const sign = Math.abs(d) < 1e-4 ? 0 : (d > 0 ? 1 : -1);
+    setSignClass(dotEl, sign);
+
+    // perpendicular call-out + sign hint
+    const flag = document.getElementById("dot-perp-flag");
+    const hint = document.getElementById("dot-sign-hint");
+    const degenerate = nu < EPS || nv < EPS;
+    if (!degenerate && sign === 0) {
+      flag.hidden = false;
+      hint.hidden = true;
+    } else {
+      flag.hidden = true;
+      hint.hidden = false;
+      if (degenerate) hint.textContent = LA.t("dot.signZeroVec");
+      else if (sign > 0) hint.textContent = LA.t("dot.signAcute");
+      else hint.textContent = LA.t("dot.signObtuse");
+    }
+  }
+
+  function update() { readout(); draw(); }
+
+  // ---------- pointer dragging of the tips ----------
+  let dragging = null;   // "u" | "v" | null
+  function ptr(ev) {
+    const rect = canvas.getBoundingClientRect();
+    return [ev.clientX - rect.left, ev.clientY - rect.top];
+  }
+  function nearTip(sx, sy, vec) {
+    const sp = S(vec.x, vec.y);
+    return Math.hypot(sp[0] - sx, sp[1] - sy) < 20;
+  }
+  canvas.addEventListener("pointerdown", (ev) => {
+    const [sx, sy] = ptr(ev);
+    // prefer u if both tips are under the pointer (u is drawn on top)
+    if (nearTip(sx, sy, u)) dragging = "u";
+    else if (nearTip(sx, sy, v)) dragging = "v";
+    else return;
+    try { canvas.setPointerCapture(ev.pointerId); } catch (e) {}
+    ev.preventDefault();
+  });
+  canvas.addEventListener("pointermove", (ev) => {
+    if (!dragging) return;
+    const [sx, sy] = ptr(ev);
+    const [wx, wy] = Sinv(sx, sy);
+    const target = dragging === "u" ? u : v;
+    target.x = wx; target.y = wy;
+    update();
+    ev.preventDefault();
+  });
+  function endDrag(ev) {
+    if (dragging) {
+      try { canvas.releasePointerCapture(ev.pointerId); } catch (e) {}
+      dragging = null;
+    }
+  }
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", endDrag);
+
+  // ---------- controls ----------
+  function swapLabel() {
+    document.getElementById("dot-swap").textContent = LA.t(projectUonV ? "dot.swap" : "dot.swapBack");
+  }
+  document.getElementById("dot-swap").addEventListener("click", () => {
+    projectUonV = !projectUonV; swapLabel(); update();
+  });
+  document.getElementById("dot-reset").addEventListener("click", () => {
+    u = { x: 2, y: 0 }; v = { x: 3, y: 0 }; projectUonV = true; swapLabel(); update();
+  });
+  document.querySelectorAll(".presets .btn").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const pu = btn.dataset.u.split(",").map(Number);
+      const pv = btn.dataset.v.split(",").map(Number);
+      u = { x: pu[0], y: pu[1] }; v = { x: pv[0], y: pv[1] };
+      update();
+    }));
+
+  // ---------- theme / language / resize ----------
+  LA.onThemeChange(() => { COL = LA.canvasColors(); draw(); });
+  LA.onLangChange(() => { swapLabel(); readout(); });
+  window.addEventListener("resize", resize);
+
+  // ---------- init (synchronous first frame) ----------
+  swapLabel();
+  readout();
+  resize();   // sizes canvas + draws
+})();
+</script>
+</body>
+</html>

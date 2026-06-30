@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Span · Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/shared.css?v=20260629h">
+
+<script src="assets/shared.js?v=20260629h"></script>
+</head>
+<body data-page="concepts">
+
+<header data-nav></header>
+
+<section class="viz">
+  <div class="stage stage--grab" aria-hidden="false">
+    <canvas id="c" role="img" data-i18n-aria="span.canvasAria" aria-label="Two vectors u and v drawn as arrows from the origin in the plane. Drag either tip. The span of the two vectors is shown live: the whole plane when they are independent, a line through the origin when they are parallel, or just the origin when both are zero."></canvas>
+    <div class="stage-hint" id="stage-hint" data-i18n="span.stageHint">Drag either arrow tip. The span is everything you can reach with a·u + b·v.</div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h1 data-i18n="span.title">Span of two vectors</h1>
+      <p class="sub" data-i18n-html="span.sub">The <em>span</em> of u and v is every point you can reach as a combination a·u + b·v. Two independent arrows reach the whole plane; two parallel ones reach only a line. See <a href="glossary.html#span">span</a> &amp; <a href="glossary.html#linear-independence">linear independence</a>.</p>
+      <div class="col-key col-key--2">
+        <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="span.vecU">vector u</span></span>
+        <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="span.vecV">vector v</span></span>
+      </div>
+      <p class="hint" id="key-idea" data-i18n-html="span.keyIdea">Key idea: span is everything two arrows can build by stretching and adding. The dimension is how many independent directions you genuinely have.</p>
+      <p class="keyidea__cite" id="cite-line"></p>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.presets">Presets</p>
+      <div class="presets" id="span-presets">
+        <button class="btn" data-u="2,1" data-v="-1,2" data-i18n="span.p.independent">Independent (plane)</button>
+        <button class="btn" data-u="2,1" data-v="-2,-1" data-i18n="span.p.parallel">Parallel (line)</button>
+        <button class="btn" data-u="0,0" data-v="0,0" data-i18n="span.p.point">Collapse (point)</button>
+        <button class="btn" id="span-reset" data-i18n="viz.reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.readout">Readout</p>
+      <div class="readout">
+        <div class="line"><span class="k" data-i18n="span.uIs">u</span><span class="v" id="r-u">(2, 1)</span></div>
+        <div class="line"><span class="k" data-i18n="span.vIs">v</span><span class="v" id="r-v">(-1, 2)</span></div>
+        <div class="line"><span class="k" data-i18n="span.independent">Linearly independent</span><span class="v" id="r-indep">yes</span></div>
+        <div class="line"><span class="k" data-i18n="span.dim">dim(span)</span><span class="v" id="r-dim">2</span></div>
+        <div class="line"><span class="k" data-i18n="span.spanIs">Span</span><span class="v" id="r-span">all of R²</span></div>
+      </div>
+      <p class="hint" id="span-hint" data-i18n="span.hintPlane">Two independent vectors reach every point of the plane, so the span is two-dimensional.</p>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="span.targetLabel">Express a point</p>
+      <p class="sub" data-i18n="span.targetSub">Click anywhere on the grid to drop a target point and see it written as a·u + b·v when it is reachable.</p>
+      <div class="readout">
+        <div class="line"><span class="k" data-i18n="span.targetPoint">Target</span><span class="v" id="r-target">·</span></div>
+        <div class="line"><span class="k" data-i18n="span.combo">a·u + b·v</span><span class="v" id="r-combo">·</span></div>
+      </div>
+      <div class="buttons">
+        <button class="btn" id="span-clear-target" data-i18n="span.clearTarget">Clear target</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer data-footer></footer>
+
+<script src="content/strings.en.js?v=20260629h"></script>
+<script src="content/strings.es.js?v=20260629h"></script>
+<script src="content/sources.data.js?v=20260629h"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script>
+// Localise [data-i18n]/[data-i18n-html]/[data-i18n-aria] text; re-run on language flip.
+(function () {
+  function paint() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", LA.t(el.getAttribute("data-i18n-aria"))); });
+    // Inline cite line for 3Blue1Brown "span" (registry is read-only; replicate the ▶ short: title ↗ shape).
+    var cite = document.getElementById("cite-line");
+    var s = (window.LA_SOURCES || {})["3b1b-span"];
+    if (cite && s) {
+      cite.innerHTML = '▶ <a href="' + s.url + '" target="_blank" rel="noopener">' +
+        s.short + ": " + s.title + " ↗</a>";
+    }
+    var ki = document.getElementById("keyideas");
+    if (ki) LA.renderKeyIdeas(document.body.dataset.page, ki);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  LA.onLangChange(paint);
+})();
+</script>
+<script>
+(function () {
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+  let COL = LA.canvasColors();
+
+  // ---------- geometry ----------
+  let W = 0, H = 0, cx = 0, cy = 0, scale = 50;
+  const GRID_N = 12;
+
+  const S = (x, y) => [cx + x * scale, cy - y * scale];
+  const Sinv = (sx, sy) => [(sx - cx) / scale, (cy - sy) / scale];
+
+  // The two spanning vectors, in world coordinates.
+  let u = [2, 1];
+  let v = [-1, 2];
+  let target = null;          // {x, y} world point clicked by the user, or null
+
+  // Dependence is angle-based: |u×v| / (|u||v|) = |sin θ|. A raw cross-product
+  // threshold would be scale-dependent (two short vectors look "parallel"); the
+  // normalised form tests the actual angle between the directions.
+  const EPS_ZERO = 0.04;      // a vector shorter than this counts as zero
+  const EPS_SIN = 0.02;       // |sin θ| below this counts as parallel
+
+  const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
+  const norm = (a) => Math.hypot(a[0], a[1]);
+
+  // Classify the configuration. Returns dim 0/1/2 plus, for dim 1, a unit
+  // direction taken from the LONGER vector (covers the one-zero-vector case).
+  function classify() {
+    const nu = norm(u), nv = norm(v);
+    if (nu < EPS_ZERO && nv < EPS_ZERO) return { dim: 0 };
+    if (nu < EPS_ZERO || nv < EPS_ZERO) {
+      const w = nu >= nv ? u : v;
+      const n = norm(w);
+      return { dim: 1, dir: [w[0] / n, w[1] / n] };
+    }
+    const sinT = Math.abs(cross(u, v)) / (nu * nv);
+    if (sinT < EPS_SIN) {
+      const w = nu >= nv ? u : v;
+      const n = norm(w);
+      return { dim: 1, dir: [w[0] / n, w[1] / n] };
+    }
+    return { dim: 2 };
+  }
+
+  function resize() {
+    const dim = LA.fitCanvas(canvas, ctx);
+    W = dim.W; H = dim.H;
+    cx = W / 2; cy = H / 2;
+    scale = Math.max(28, Math.min(W, H) / (2 * 6.5));
+    draw();
+  }
+
+  function drawGrid() {
+    ctx.save();
+    ctx.globalAlpha = 0.5; ctx.strokeStyle = COL.gridOrig; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = -GRID_N; i <= GRID_N; i++) {
+      let a = S(i, -GRID_N), b = S(i, GRID_N);
+      ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
+      let c = S(-GRID_N, i), d = S(GRID_N, i);
+      ctx.moveTo(c[0], c[1]); ctx.lineTo(d[0], d[1]);
+    }
+    ctx.stroke(); ctx.restore();
+  }
+
+  function drawAxes() {
+    ctx.save();
+    ctx.strokeStyle = COL.axis; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    let l = S(-GRID_N, 0), r = S(GRID_N, 0);
+    ctx.moveTo(l[0], l[1]); ctx.lineTo(r[0], r[1]);
+    let b = S(0, -GRID_N), t = S(0, GRID_N);
+    ctx.moveTo(b[0], b[1]); ctx.lineTo(t[0], t[1]);
+    ctx.stroke(); ctx.restore();
+  }
+
+  // Faint shading of the whole visible plane (span = R²). A neutral hue so the
+  // shaded span reads as "everything reachable", not as more of vector u.
+  function shadePlane() {
+    ctx.save();
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = COL.muted;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  // The span line through the origin in direction `dir`, extended past the edges.
+  function drawSpanLine(dir) {
+    const big = GRID_N * 2;
+    const a = S(dir[0] * big, dir[1] * big);
+    const b = S(-dir[0] * big, -dir[1] * big);
+    ctx.save();
+    ctx.strokeStyle = COL.muted; ctx.lineWidth = 6; ctx.lineCap = "round";
+    ctx.globalAlpha = 0.4;
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawOriginDot() {
+    const o = S(0, 0);
+    ctx.save();
+    ctx.fillStyle = COL.muted; ctx.globalAlpha = 0.7;
+    ctx.beginPath(); ctx.arc(o[0], o[1], 7, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function arrow(x, y, color, label) {
+    let o = S(0, 0), e = S(x, y);
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.5; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+    const ang = Math.atan2(o[1] - e[1], e[0] - o[0]);
+    const len = Math.hypot(e[0] - o[0], e[1] - o[1]);
+    if (len > 6) {
+      const hs = 12;
+      ctx.beginPath();
+      ctx.moveTo(e[0], e[1]);
+      ctx.lineTo(e[0] - hs * Math.cos(ang - 0.5), e[1] + hs * Math.sin(ang - 0.5));
+      ctx.lineTo(e[0] - hs * Math.cos(ang + 0.5), e[1] + hs * Math.sin(ang + 0.5));
+      ctx.closePath(); ctx.fill();
+    }
+    // grab handle at the tip
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath(); ctx.arc(e[0], e[1], 5, 0, Math.PI * 2); ctx.fill();
+    if (label) {
+      ctx.globalAlpha = 1;
+      ctx.font = "600 15px " + COL.mono;
+      ctx.fillText(label, e[0] + 8, e[1] - 8);
+    }
+    ctx.restore();
+  }
+
+  function drawTarget() {
+    if (!target) return;
+    const p = S(target.x, target.y);
+    ctx.save();
+    const c = classify();
+    const reach = isReachable(c);
+    ctx.strokeStyle = reach ? COL.jHat : COL.flip;
+    ctx.fillStyle = reach ? COL.jHat : COL.flip;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 0.4;
+    ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawGrid();
+    const c = classify();
+    if (c.dim === 2) shadePlane();
+    else if (c.dim === 1) drawSpanLine(c.dir);
+    else drawOriginDot();
+    drawAxes();
+    drawTarget();
+    arrow(u[0], u[1], COL.iHat, "u");
+    arrow(v[0], v[1], COL.jHat, "v");
+  }
+
+  // ---------- reachability / coordinates ----------
+  // Solve [u v]·[a,b]ᵀ = p for the combination, when u,v are independent.
+  function solveCombo(p) {
+    const D = u[0] * v[1] - u[1] * v[0];
+    if (Math.abs(D) < 1e-9) return null;
+    const a = (p[0] * v[1] - p[1] * v[0]) / D;
+    const b = (u[0] * p[1] - u[1] * p[0]) / D;
+    return [a, b];
+  }
+  function isReachable(c) {
+    if (!target) return false;
+    const p = [target.x, target.y];
+    if (c.dim === 2) return true;
+    if (c.dim === 1) {
+      // on the line through the origin along dir?
+      const off = Math.abs(cross(c.dir, p));
+      return off < 0.12;
+    }
+    // dim 0: only the origin is reachable
+    return Math.hypot(p[0], p[1]) < 0.12;
+  }
+
+  // ---------- readout ----------
+  const fv = (a) => "(" + LA.fmt(a[0]) + ", " + LA.fmt(a[1]) + ")";
+  function readout() {
+    const c = classify();
+    document.getElementById("r-u").textContent = fv(u);
+    document.getElementById("r-v").textContent = fv(v);
+    document.getElementById("r-indep").textContent = LA.t(c.dim === 2 ? "span.yes" : "span.no");
+    document.getElementById("r-dim").textContent = String(c.dim);
+    let spanKey = "span.spanPlane", hintKey = "span.hintPlane";
+    if (c.dim === 1) { spanKey = "span.spanLine"; hintKey = "span.hintLine"; }
+    else if (c.dim === 0) { spanKey = "span.spanPoint"; hintKey = "span.hintPoint"; }
+    document.getElementById("r-span").textContent = LA.t(spanKey);
+    document.getElementById("span-hint").textContent = LA.t(hintKey);
+    // target
+    const rt = document.getElementById("r-target");
+    const rc = document.getElementById("r-combo");
+    if (!target) { rt.textContent = "·"; rc.textContent = "·"; return; }
+    rt.textContent = fv([target.x, target.y]);
+    if (!isReachable(c)) { rc.textContent = LA.t("span.unreachable"); return; }
+    const combo = c.dim === 2 ? solveCombo([target.x, target.y]) : null;
+    if (combo) {
+      rc.textContent = LA.fmt(combo[0]) + "·u + " + LA.fmt(combo[1]) + "·v";
+    } else {
+      // reachable but on a line / origin: coordinates are not unique
+      rc.textContent = LA.t("span.reachableNotUnique");
+    }
+  }
+
+  function refresh() { readout(); draw(); }
+
+  // ---------- pointer interaction ----------
+  function ptr(ev) {
+    const rect = canvas.getBoundingClientRect();
+    return [ev.clientX - rect.left, ev.clientY - rect.top];
+  }
+  // Which tip is under the pointer? Grab the nearer one when both are close.
+  function hitTip(sx, sy) {
+    const su = S(u[0], u[1]), sv = S(v[0], v[1]);
+    const du = Math.hypot(su[0] - sx, su[1] - sy);
+    const dv = Math.hypot(sv[0] - sx, sv[1] - sy);
+    const R = 18;
+    if (du <= R && du <= dv) return "u";
+    if (dv <= R) return "v";
+    return null;
+  }
+  let dragging = null;        // "u" | "v" | null
+
+  canvas.addEventListener("pointerdown", (ev) => {
+    const [sx, sy] = ptr(ev);
+    const hit = hitTip(sx, sy);
+    if (hit) {
+      dragging = hit;
+      try { canvas.setPointerCapture(ev.pointerId); } catch (e) {}
+      ev.preventDefault();
+      return;
+    }
+    // otherwise: drop / move the target point
+    const [wx, wy] = Sinv(sx, sy);
+    target = { x: wx, y: wy };
+    refresh();
+    ev.preventDefault();
+  });
+  canvas.addEventListener("pointermove", (ev) => {
+    if (!dragging) return;
+    const [sx, sy] = ptr(ev);
+    const [wx, wy] = Sinv(sx, sy);
+    if (dragging === "u") u = [wx, wy]; else v = [wx, wy];
+    refresh();
+    ev.preventDefault();
+  });
+  function endDrag(ev) {
+    if (dragging !== null) {
+      try { canvas.releasePointerCapture(ev.pointerId); } catch (e) {}
+      dragging = null;
+    }
+  }
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", endDrag);
+
+  // ---------- presets / reset ----------
+  document.querySelectorAll("#span-presets .btn[data-u]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      u = btn.dataset.u.split(",").map(Number);
+      v = btn.dataset.v.split(",").map(Number);
+      target = null;
+      refresh();
+    }));
+  document.getElementById("span-reset").addEventListener("click", () => {
+    u = [2, 1]; v = [-1, 2]; target = null; refresh();
+  });
+  document.getElementById("span-clear-target").addEventListener("click", () => {
+    target = null; refresh();
+  });
+
+  // ---------- theme / language / resize ----------
+  LA.onThemeChange(() => { COL = LA.canvasColors(); draw(); });
+  LA.onLangChange(() => { readout(); });
+  window.addEventListener("resize", resize);
+
+  // ---------- init (synchronous first frame) ----------
+  resize();
+  readout();
+})();
+</script>
+</body>
+</html>
