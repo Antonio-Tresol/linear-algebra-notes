@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="assets/shared.css?v=20260629i">
+<link rel="stylesheet" href="assets/shared.css?v=20260629j">
 
-<script src="assets/shared.js?v=20260629i"></script>
+<script src="assets/shared.js?v=20260629j"></script>
 </head>
 <body data-page="concepts">
 
@@ -72,18 +72,25 @@
     </div>
 
     <div class="card">
-      <p class="label" data-i18n="sub.keyidea.label">Key idea</p>
-      <p class="hint" data-i18n-html="sub.keyidea.body">When det = 0 the columns are dependent, so the output space collapses and loses a dimension. The null space is exactly what gets crushed to zero: bigger collapse, bigger null space.</p>
       <p class="keyidea__cite" id="cite-line"></p>
     </div>
   </div>
 </section>
 
+<section class="page" style="padding-top:0">
+  <div class="card">
+    <p class="label" data-i18n="keyideas.label">Key ideas to remember</p>
+    <div class="keyideas__list" id="keyideas" data-page="subspaces"></div>
+  </div>
+</section>
+
 <footer data-footer></footer>
 
-<script src="content/strings.en.js?v=20260629i"></script>
-<script src="content/strings.es.js?v=20260629i"></script>
-<script src="content/sources.data.js?v=20260629i"></script>
+<script src="content/strings.en.js?v=20260629j"></script>
+<script src="content/strings.es.js?v=20260629j"></script>
+<script src="content/sources.data.js?v=20260629j"></script>
+<script src="content/keyideas.en.js?v=20260629j"></script>
+<script src="content/keyideas.es.js?v=20260629j"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <script>
@@ -100,6 +107,8 @@
     document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", LA.t(el.getAttribute("data-i18n-aria"))); });
     var cl = document.getElementById("cite-line");
     if (cl) cl.innerHTML = LA.t("sub.cite.prefix") + " " + citeChip("3b1b-inverse-matrices") + " &middot; " + citeChip("strang");
+    var ki = document.getElementById("keyideas");
+    if (ki && LA.renderKeyIdeas) LA.renderKeyIdeas(ki.dataset.page || document.body.dataset.page, ki);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
   else paint();

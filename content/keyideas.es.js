@@ -70,5 +70,78 @@
         cite: "3b1b-determinant",
       },
     ],
+    "span": [
+      {
+        title: "El espacio generado es alcance",
+        body: "El espacio generado por dos vectores es todo lo que puedes construir con ellos estirando y sumando, es decir, todas las combinaciones $a\\,u + b\\,v$.",
+        cite: "3b1b-span",
+      },
+      {
+        title: "Independencia es alcance pleno",
+        body: "Dos vectores que apuntan en direcciones realmente distintas generan todo el plano. La dimensión del espacio generado cuenta cuántas direcciones independientes tienes de verdad.",
+        cite: "3b1b-span",
+      },
+      {
+        title: "La dependencia cuesta una dirección",
+        body: "Cuando los vectores se alinean, toda combinación se queda sobre una recta, así que el espacio generado baja a una sola dimensión. Alinearse te cuesta una dirección entera de alcance.",
+        cite: "3b1b-span",
+      },
+    ],
+    "dotproduct": [
+      {
+        title: "Un número que mide la alineación",
+        body: "El producto escalar $u\\cdot v$ es un número que dice cuánto apunta $u$ a lo largo de $v$. Es igual a $\\|u\\|\\,\\|v\\|\\cos\\theta$, máximo cuando se alinean y cero cuando son perpendiculares.",
+        cite: "3b1b-dot-products",
+      },
+      {
+        title: "El signo lee el ángulo",
+        body: "Positivo significa ángulo agudo, cero un ángulo recto, y negativo que los vectores se inclinan en sentidos opuestos. El signo por sí solo te dice de qué lado de la perpendicular estás.",
+        cite: "3b1b-dot-products",
+      },
+      {
+        title: "Una aplicación lineal oculta",
+        body: "Siguiendo la idea de dualidad de 3Blue1Brown, calcular $u\\cdot v$ es lo mismo que aplicar el vector fila $u^{\\mathsf T}$, una matriz $1\\times2$ que lleva el plano a la recta numérica.",
+        cite: "3b1b-dot-products",
+      },
+    ],
+    "subspaces": [
+      {
+        title: "El espacio columna es el alcance",
+        body: "El espacio columna es el espacio generado por las columnas, así que es toda salida que la aplicación puede producir. Su dimensión es el rango.",
+        cite: "3b1b-inverse-matrices",
+      },
+      {
+        title: "El núcleo es lo que se aplasta",
+        body: "El núcleo es toda entrada que va a parar a cero. Una aplicación de rango completo no aplasta nada, así que su núcleo es solo el origen.",
+        cite: "3b1b-inverse-matrices",
+      },
+      {
+        title: "Un colapso, cuatro nombres",
+        body: "Cuando $\\det = 0$ las columnas son dependientes, así que el rango baja, el núcleo crece más allá del origen, y la aplicación pierde su inversa. Es un mismo hecho visto de cuatro maneras.",
+        cite: "3b1b-determinant",
+      },
+      {
+        title: "Rango más nulidad es fijo",
+        body: "Lo que sobrevive más lo que colapsa siempre suma la dimensión de entrada: $\\operatorname{rank} + \\dim(\\text{núcleo}) = n$.",
+        cite: "3b1b-inverse-matrices",
+      },
+    ],
+    "dimensions": [
+      {
+        title: "La forma fija las dimensiones",
+        body: "Una matriz $m\\times n$ lleva una entrada $n$-dimensional a una salida $m$-dimensional. Los dos números son los tamaños de los dos espacios que une.",
+        cite: "3b1b-nonsquare",
+      },
+      {
+        title: "Las columnas son destinos",
+        body: "Las $n$ columnas son a dónde aterrizan los $n$ vectores de la base de entrada, ya escritos en el espacio de salida. Conocerlas es conocer toda la aplicación.",
+        cite: "3b1b-nonsquare",
+      },
+      {
+        title: "Más entradas aplastan, menos incrustan",
+        body: "Con más entradas que salidas (una $2\\times3$) algunas direcciones tienen que colapsar, así que el núcleo no es trivial. Con menos (una $3\\times2$) la entrada se incrusta como una lámina plana que no puede llenar el espacio mayor.",
+        cite: "3b1b-nonsquare",
+      },
+    ],
   };
 })();

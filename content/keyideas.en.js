@@ -71,5 +71,78 @@
         cite: "3b1b-determinant",
       },
     ],
+    "span": [
+      {
+        title: "Span is reach",
+        body: "The span of two vectors is everything you can build from them by stretching and adding, that is, all the combinations $a\\,u + b\\,v$.",
+        cite: "3b1b-span",
+      },
+      {
+        title: "Independent means full reach",
+        body: "Two vectors pointing in genuinely different directions span the whole plane. The dimension of the span counts how many independent directions you actually have.",
+        cite: "3b1b-span",
+      },
+      {
+        title: "Dependence costs a direction",
+        body: "When the vectors line up, every combination stays on one line, so the span drops to a single dimension. Lining up loses you a whole direction of reach.",
+        cite: "3b1b-span",
+      },
+    ],
+    "dotproduct": [
+      {
+        title: "A number that measures alignment",
+        body: "The dot product $u\\cdot v$ is one number saying how much $u$ points along $v$. It equals $\\|u\\|\\,\\|v\\|\\cos\\theta$, largest when they align and zero when they are perpendicular.",
+        cite: "3b1b-dot-products",
+      },
+      {
+        title: "The sign reads the angle",
+        body: "Positive means an acute angle, zero means a right angle, and negative means the vectors lean apart. The sign alone tells you which side of perpendicular you are on.",
+        cite: "3b1b-dot-products",
+      },
+      {
+        title: "A hidden linear map",
+        body: "Following 3Blue1Brown's duality idea, taking $u\\cdot v$ is the same as applying the row vector $u^{\\mathsf T}$, a $1\\times2$ matrix that sends the plane to the number line.",
+        cite: "3b1b-dot-products",
+      },
+    ],
+    "subspaces": [
+      {
+        title: "Column space is the reach",
+        body: "The column space is the span of the columns, so it is every output the map can produce. Its dimension is the rank.",
+        cite: "3b1b-inverse-matrices",
+      },
+      {
+        title: "Null space is what is crushed",
+        body: "The null space is every input sent to zero. A full-rank map crushes nothing, so its null space is just the origin.",
+        cite: "3b1b-inverse-matrices",
+      },
+      {
+        title: "One collapse, four names",
+        body: "When $\\det = 0$ the columns are dependent, so the rank drops, the null space grows past the origin, and the map loses its inverse. These are one fact seen four ways.",
+        cite: "3b1b-determinant",
+      },
+      {
+        title: "Rank plus nullity is fixed",
+        body: "What survives plus what collapses always adds up to the input dimension: $\\operatorname{rank} + \\dim(\\text{null}) = n$.",
+        cite: "3b1b-inverse-matrices",
+      },
+    ],
+    "dimensions": [
+      {
+        title: "Shape sets the dimensions",
+        body: "An $m\\times n$ matrix maps $n$-dimensional input to $m$-dimensional output. The two numbers are the sizes of the two spaces it joins.",
+        cite: "3b1b-nonsquare",
+      },
+      {
+        title: "Columns are landing spots",
+        body: "The $n$ columns are where the $n$ input basis vectors land, now written in the output space. Knowing them is knowing the whole map.",
+        cite: "3b1b-nonsquare",
+      },
+      {
+        title: "More inputs squash, fewer embed",
+        body: "With more inputs than outputs (a $2\\times3$) directions must collapse, so the null space is non-trivial. With fewer (a $3\\times2$) the input embeds as a flat sheet that cannot fill the larger space.",
+        cite: "3b1b-nonsquare",
+      },
+    ],
   };
 })();
