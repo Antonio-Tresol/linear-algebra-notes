@@ -248,10 +248,17 @@
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
       });
     }
+    function citeLine(id) {
+      var s = (window.LA_SOURCES || {})[id];
+      if (!s) return "";
+      return '<p class="keyidea__cite">▶ <a href="' + s.url + '" target="_blank" rel="noopener">' +
+        esc(s.short) + ": " + esc(s.title) + " ↗</a></p>";
+    }
     mountEl.innerHTML = list.map(function (it, i) {
       return '<div class="keyidea"><span class="keyidea__num">' + (i + 1) + "</span>" +
         '<div><p class="keyidea__title">' + esc(it.title) + "</p>" +
-        '<p class="keyidea__body">' + (it.body || "") + "</p></div></div>";
+        '<p class="keyidea__body">' + (it.body || "") + "</p>" +
+        citeLine(it.cite) + "</div></div>";
     }).join("");
     if (window.renderMathInElement) {
       window.renderMathInElement(mountEl, {
