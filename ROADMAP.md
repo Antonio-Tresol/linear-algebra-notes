@@ -44,7 +44,15 @@ sections that compose into one "Subspaces explorer"). All cited, all key-ideas s
 - **Rank & full rank:** rank = dimension of the column space = number of independent directions that survive. Show rank 2 / rank 1 / rank 0 in 2D and rank 3/2/1/0 in 3D as the columns lose independence. "Full rank" = nothing collapses.
 - **Why `det(A)=0` is what it is:** dedicated explainer. As columns become dependent, the unit square/cube flattens, area/volume → 0, and the map stops being invertible. Connect det 0 ⇔ dependent columns ⇔ nonzero null space ⇔ not full rank. This is the conceptual hub linking B together.
 - **Identity as "do nothing":** a short visual showing `I` leaves every vector fixed; use as the baseline every animation departs from.
-- Rank–nullity should fall out visually (surviving directions + collapsed directions = input dimension), linking to the `rank-nullity` theorem already in the glossary.
+- **Non-square matrices as maps between dimensions** (3Blue1Brown ch. 8): an `m×n` matrix maps `Rⁿ → Rᵐ`. Show the input space and output space side by side, with the `n` columns landing as `n` vectors in the `m`-dimensional output (the images of the input basis):
+  - `2×3` maps 3D → 2D (three columns are three 2D vectors; space is squashed to the plane).
+  - `3×2` maps 2D → 3D (two columns are two 3D vectors; the plane is embedded as a slanted sheet in space).
+  - `1×2` maps 2D → 1D (the number line); tie to the `dot-product` / linear-functional view.
+  - `2×1` maps 1D → 2D (a line drawn out in the plane).
+  Let the user drag the input basis / a shape and watch its image appear in the other space.
+  - **Non-square multiplication as composition of dimension changes:** `(m×n)(n×p)` is the chain `Rᵖ → Rⁿ → Rᵐ`; the inner dimensions must match. Visualise the two hops, and show why a `2×3` times a `3×2` gives a `2×2` map of the plane to itself, etc.
+  - Needs a new glossary term ("rectangular / non-square matrix") and a new source entry for the 3Blue1Brown "Nonsquare matrices" lesson in `content/sources.data.js`.
+- Rank–nullity should fall out visually (surviving directions + collapsed directions = input dimension), linking to the `rank-nullity` theorem already in the glossary. Non-square maps make rank vivid: a `3×2` map has rank at most 2, so its image is at most a plane inside 3D.
 
 **Files:** `concepts/*.html` or a `subspaces.html` explorer + `content/*.data.js` for any structured bits. New nav group.
 
