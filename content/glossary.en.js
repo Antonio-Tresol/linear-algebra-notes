@@ -1,5 +1,5 @@
 /* Glossary text — English overlay. Keyed by the ids in glossary.data.js.
-   Only translatable prose lives here; LaTeX stays out (math is universal). */
+   Only translatable prose lives here; LaTeX stays out (maths is universal). */
 (function () {
   var T = (window.LA_GLOSSARY_TEXT = window.LA_GLOSSARY_TEXT || {});
   T.en = {
