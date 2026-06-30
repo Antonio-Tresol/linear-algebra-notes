@@ -76,6 +76,30 @@
       cites.map(renderCite).join("") + "</div>";
   }
 
+  /* --- theorem snapshots: the literal statements anchored to this term ----- */
+  function renderTheorems(termId) {
+    var all = window.LA_THEOREMS || [];
+    var hits = all.filter(function (th) { return (th.relatedTerms || []).indexOf(termId) >= 0; });
+    if (!hits.length) return "";
+    var rows = hits.map(function (th) {
+      var t = LA.pickLocale(window.LA_THEOREMS_TEXT, th.id);
+      var h = '<div class="theorem">';
+      if (t.name) h += '<p class="theorem__name">' + esc(t.name) + "</p>";
+      h += '<div class="theorem__statement">$$' + th.statement + "$$</div>";
+      if (t.note) h += '<p class="term__short" style="font-size:13px;margin:6px 0 0">' + mdInline(t.note) + "</p>";
+      if (th.cites && th.cites.length) {
+        h += '<p class="theorem__cite">' + th.cites.map(function (c) {
+          var s = (window.LA_SOURCES || {})[c.src] || {};
+          var loc = (c.sec ? '<span class="cite__where">' + esc(c.sec) + "</span>" : "") +
+            (c.page != null ? " p. " + c.page : "");
+          return (s.short ? esc(s.short) + " " : "") + loc;
+        }).join(" · ") + "</p>";
+      }
+      return h + "</div>";
+    }).join("");
+    return '<div class="theorems"><p class="theorems__label">' + LA.t("glossary.theorems") + "</p>" + rows + "</div>";
+  }
+
   /* --- a term card -------------------------------------------------------- */
   function textOf(id) { return LA.pickLocale(window.LA_GLOSSARY_TEXT, id); }
 
@@ -113,6 +137,7 @@
       html += '<p class="seealso"><span class="seealso__label">' + LA.t("glossary.seeAlso") + ":</span> " + chips + "</p>";
     }
 
+    html += renderTheorems(entry.id);
     html += renderCites(entry.cites);
     html += "</article>";
     return html;

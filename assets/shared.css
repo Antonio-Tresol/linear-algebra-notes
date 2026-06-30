@@ -505,6 +505,46 @@ code, kbd, samp { font-family: var(--font-mono); }
 }
 .seealso a:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); text-decoration: none; }
 
+/* --- Theorem snapshots (inside glossary cards) ---------------------------- */
+.theorems { margin: 14px 0 0; }
+.theorems__label {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+.theorem {
+  background: color-mix(in srgb, var(--vec-j) 7%, var(--surface-alt));
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--vec-j);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 11px 14px;
+  margin: 0 0 9px;
+}
+.theorem__name { font-family: var(--font-display); font-weight: 700; font-size: 13.5px; color: var(--text); margin: 0 0 5px; }
+.theorem__statement { font-size: 15px; overflow-x: auto; }
+.theorem__statement .katex-display { margin: 6px 0; }
+.theorem__cite { font-family: var(--font-display); font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.theorem__cite .cite__where { color: var(--text); font-weight: 600; }
+
+/* --- Key ideas to remember (viz pages) ------------------------------------ */
+.keyideas { }
+.keyideas__list { display: flex; flex-direction: column; gap: 12px; }
+.keyidea { display: flex; gap: 11px; }
+.keyidea__num {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  color: var(--accent-ink); background: var(--accent);
+  border-radius: 50%;
+}
+.keyidea__title { font-family: var(--font-display); font-weight: 700; font-size: 13.5px; color: var(--text); margin: 0 0 2px; }
+.keyidea__body { font-size: 13.5px; color: var(--body); margin: 0; line-height: 1.5; }
+
 /* --- Citations ------------------------------------------------------------ */
 .cites { margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--border); }
 .cites__label {

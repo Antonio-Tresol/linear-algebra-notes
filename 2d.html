@@ -8,9 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/shared.css?v=20260629a">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/shared.css?v=20260629b">
 
-<script src="assets/shared.js?v=20260629a"></script>
+<script src="assets/shared.js?v=20260629b"></script>
 </head>
 <body data-page="2d">
 
@@ -73,20 +74,32 @@
   </div>
 </section>
 
+<section class="page" style="padding-top:0">
+  <div class="card">
+    <p class="label" data-i18n="keyideas.label">Key ideas to remember</p>
+    <div class="keyideas__list" id="keyideas"></div>
+  </div>
+</section>
+
 <footer data-footer></footer>
 
-<script src="content/strings.en.js?v=20260629a"></script>
-<script src="content/strings.es.js?v=20260629a"></script>
+<script src="content/strings.en.js?v=20260629b"></script>
+<script src="content/strings.es.js?v=20260629b"></script>
+<script src="content/keyideas.en.js?v=20260629b"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <script>
-// Localise static [data-i18n] / [data-i18n-html] text, and re-run on language flip.
+// Localise [data-i18n]/[data-i18n-html] text and paint the key-ideas card; re-run on language flip.
 (function () {
-  function localize() {
+  function paint() {
     document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
     document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    var ki = document.getElementById("keyideas");
+    if (ki) LA.renderKeyIdeas(document.body.dataset.page, ki);
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", localize);
-  else localize();
-  LA.onLangChange(localize);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  LA.onLangChange(paint);
 })();
 </script>
 <script>

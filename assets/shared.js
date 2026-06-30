@@ -156,6 +156,7 @@
     { id: "home", href: "index.html", label: "nav.home" },
     { id: "2d", href: "2d.html", label: "nav.2d" },
     { id: "3d", href: "3d.html", label: "nav.3d" },
+    { id: "matmul", href: "matmul.html", label: "nav.matmul" },
     { id: "glossary", href: "glossary.html", label: "nav.glossary" },
     { id: "notation", href: "notation.html", label: "nav.notation" },
     { id: "notes", href: "notes.html", label: "nav.notes" },
@@ -235,6 +236,34 @@
     }
   }
 
+  /* --- Key ideas card (viz pages) ----------------------------------------- */
+  // Reads window.LA_KEYIDEAS[locale][page] (content/keyideas.<locale>.js) and
+  // paints a numbered list into mountEl, typesetting any inline $…$ via KaTeX.
+  function renderKeyIdeas(page, mountEl) {
+    if (!mountEl) return;
+    var K = window.LA_KEYIDEAS || {};
+    var list = (K[currentLocale] && K[currentLocale][page]) || (K.en && K.en[page]) || [];
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+    mountEl.innerHTML = list.map(function (it, i) {
+      return '<div class="keyidea"><span class="keyidea__num">' + (i + 1) + "</span>" +
+        '<div><p class="keyidea__title">' + esc(it.title) + "</p>" +
+        '<p class="keyidea__body">' + (it.body || "") + "</p></div></div>";
+    }).join("");
+    if (window.renderMathInElement) {
+      window.renderMathInElement(mountEl, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+        ],
+        throwOnError: false,
+      });
+    }
+  }
+
   /* --- Wire up chrome once the DOM exists ---------------------------------- */
   function init() { buildNav(); buildFooter(); }
   if (document.readyState === "loading") {
@@ -257,6 +286,7 @@
     toggleTheme: toggleTheme,
     reduceMotion: reduceMotion,
     renderMarkdown: renderMarkdown,
+    renderKeyIdeas: renderKeyIdeas,
     // i18n
     t: t,
     pickLocale: pickLocale,

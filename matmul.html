@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix multiplication as composition · Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/shared.css?v=20260629b">
+
+<script src="assets/shared.js?v=20260629b"></script>
+</head>
+<body data-page="matmul">
+
+<header data-nav></header>
+
+<section class="viz">
+  <div class="stage" aria-hidden="false">
+    <canvas id="c" role="img" aria-label="A coordinate grid bent by the composition of two 2 by 2 matrices A and B. The basis vectors i-hat and j-hat move to the columns of the product, and the image of the unit square is shaded; its signed area equals the determinant of the product."></canvas>
+    <div class="stage-hint" id="stage-hint" data-i18n="matmul.stageHint">Apply B first, then A. The grid carries the result of B into A.</div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h1 data-i18n="matmul.title">Multiplying = composing</h1>
+      <p class="sub" data-i18n-html="matmul.sub">A matrix product is a <em>composition</em>: AB means "do B first, then A". Order matters, so AB is usually not BA. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
+
+      <p class="label" data-i18n="matmul.matrixA">Matrix A (applied second)</p>
+      <div class="matrix-row">
+        <div class="bracket">[</div>
+        <div class="cells cells--2">
+          <input id="a0" type="number" step="0.1" value="0" aria-label="A: top-left">
+          <input id="a1" type="number" step="0.1" value="-1" aria-label="A: top-right">
+          <input id="a2" type="number" step="0.1" value="1" aria-label="A: bottom-left">
+          <input id="a3" type="number" step="0.1" value="0" aria-label="A: bottom-right">
+        </div>
+      </div>
+
+      <p class="label" data-i18n="matmul.matrixB">Matrix B (applied first)</p>
+      <div class="matrix-row">
+        <div class="bracket">[</div>
+        <div class="cells cells--2">
+          <input id="b0" type="number" step="0.1" value="1" aria-label="B: top-left">
+          <input id="b1" type="number" step="0.1" value="1" aria-label="B: top-right">
+          <input id="b2" type="number" step="0.1" value="0" aria-label="B: bottom-left">
+          <input id="b3" type="number" step="0.1" value="1" aria-label="B: bottom-right">
+        </div>
+      </div>
+
+      <div class="col-key col-key--2">
+        <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="viz2d.iLands">î lands here</span></span>
+        <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="viz2d.jLands">ĵ lands here</span></span>
+      </div>
+
+      <div class="buttons">
+        <button id="animate" class="btn btn--primary" data-i18n="matmul.animate">Animate composition</button>
+        <button id="order" class="btn" data-i18n="matmul.showBA">Show B∘A instead</button>
+        <button id="reset" class="btn" data-i18n="viz.reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.presets">Presets</p>
+      <div class="presets">
+        <button class="btn" data-a="0,-1,1,0" data-b="1,1,0,1" data-i18n="matmul.p.rotShear">A: rotate 90°, B: shear x</button>
+        <button class="btn" data-a="2,0,0,2" data-b="0.707,-0.707,0.707,0.707" data-i18n="matmul.p.scaleRot">A: scale 2×, B: rotate 45°</button>
+        <button class="btn" data-a="1,1,0,1" data-b="1,0,1,1" data-i18n="matmul.p.shearShear">A: shear x, B: shear y</button>
+        <button class="btn" data-a="1,0,0,-1" data-b="0,-1,1,0" data-i18n="matmul.p.flipRot">A: flip y, B: rotate 90°</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.readout">Readout</p>
+      <div class="readout">
+        <div class="line"><span class="k" id="r-prod-key" data-i18n="matmul.product">Product AB</span><span class="v" id="r-prod">[0, -1; 1, 1]</span></div>
+        <div class="line"><span class="k" data-i18n="matmul.detA">det(A)</span><span class="v" id="r-detA">1.00</span></div>
+        <div class="line"><span class="k" data-i18n="matmul.detB">det(B)</span><span class="v" id="r-detB">1.00</span></div>
+        <div class="line"><span class="k" data-i18n="matmul.detProductOf">det(A) · det(B)</span><span class="v" id="r-detmul">1.00</span></div>
+        <div class="line"><span class="k" id="r-detprod-key" data-i18n="matmul.detProduct">det(AB)</span><span class="v" id="r-detprod">1.00</span></div>
+      </div>
+      <p class="hint" data-i18n-html="matmul.hint">Notice det(AB) = det(A) · det(B), always. Swapping the order changes the product matrix (AB ≠ BA) but never its determinant, since det(AB) = det(BA). The shaded patch is the image of the unit square; see <a href="glossary.html#determinant">determinant</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" style="padding-top:0">
+  <div class="card">
+    <p class="label" data-i18n="keyideas.label">Key ideas to remember</p>
+    <div class="keyideas__list" id="keyideas"></div>
+  </div>
+</section>
+
+<footer data-footer></footer>
+
+<script src="content/strings.en.js?v=20260629b"></script>
+<script src="content/strings.es.js?v=20260629b"></script>
+<script src="content/keyideas.en.js?v=20260629b"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script>
+// Localise [data-i18n]/[data-i18n-html] text and paint the key-ideas card; re-run on language flip.
+(function () {
+  function paint() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    var ki = document.getElementById("keyideas");
+    if (ki) LA.renderKeyIdeas(document.body.dataset.page, ki);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  LA.onLangChange(paint);
+})();
+</script>
+<script>
+(function () {
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+
+  let COL = LA.canvasColors();
+  const inputs = {
+    a0: document.getElementById("a0"), a1: document.getElementById("a1"),
+    a2: document.getElementById("a2"), a3: document.getElementById("a3"),
+    b0: document.getElementById("b0"), b1: document.getElementById("b1"),
+    b2: document.getElementById("b2"), b3: document.getElementById("b3"),
+  };
+
+  const ID = [1, 0, 0, 1];
+  // "AB" means apply B first then A; "BA" means apply A first then B.
+  let orderAB = true;
+  let cur = ID.slice();
+  let W = 0, H = 0, cx = 0, cy = 0, scale = 50;
+  const GRID_N = 12;
+  const DUR = 700;       // per-stage tween length
+  const PAUSE = 420;     // brief hold between the two stages
+  let animToken = 0;     // bumped on each animate request to cancel stale loops
+
+  function resize() {
+    const dim = LA.fitCanvas(canvas, ctx);
+    W = dim.W; H = dim.H;
+    cx = W / 2; cy = H / 2;
+    scale = Math.max(28, Math.min(W, H) / (2 * 6.5));
+    draw();
+  }
+
+  const S = (x, y) => [cx + x * scale, cy - y * scale];
+  const apply = (m, x, y) => [m[0] * x + m[1] * y, m[2] * x + m[3] * y];
+  const det = (m) => m[0] * m[3] - m[1] * m[2];
+
+  // Row-major [a,b,c,d] = [[a,b],[c,d]]. P = M·N applies N first, then M.
+  function mul(M, N) {
+    return [
+      M[0] * N[0] + M[1] * N[2], M[0] * N[1] + M[1] * N[3],
+      M[2] * N[0] + M[3] * N[2], M[2] * N[1] + M[3] * N[3],
+    ];
+  }
+
+  function drawGridLines(m, color, width, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width;
+    ctx.beginPath();
+    for (let i = -GRID_N; i <= GRID_N; i++) {
+      let p1 = apply(m, i, -GRID_N), p2 = apply(m, i, GRID_N);
+      let s1 = S(p1[0], p1[1]), s2 = S(p2[0], p2[1]);
+      ctx.moveTo(s1[0], s1[1]); ctx.lineTo(s2[0], s2[1]);
+      let q1 = apply(m, -GRID_N, i), q2 = apply(m, GRID_N, i);
+      let t1 = S(q1[0], q1[1]), t2 = S(q2[0], q2[1]);
+      ctx.moveTo(t1[0], t1[1]); ctx.lineTo(t2[0], t2[1]);
+    }
+    ctx.stroke(); ctx.restore();
+  }
+
+  function drawAxes() {
+    ctx.save();
+    ctx.strokeStyle = COL.axis; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    let l = S(-GRID_N, 0), r = S(GRID_N, 0);
+    ctx.moveTo(l[0], l[1]); ctx.lineTo(r[0], r[1]);
+    let b = S(0, -GRID_N), t = S(0, GRID_N);
+    ctx.moveTo(b[0], b[1]); ctx.lineTo(t[0], t[1]);
+    ctx.stroke(); ctx.restore();
+  }
+
+  function arrow(x, y, color, label) {
+    let o = S(0, 0), e = S(x, y);
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.5; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+    const ang = Math.atan2(o[1] - e[1], e[0] - o[0]);
+    const len = Math.hypot(e[0] - o[0], e[1] - o[1]);
+    if (len > 6) {
+      const hs = 12;
+      ctx.beginPath();
+      ctx.moveTo(e[0], e[1]);
+      ctx.lineTo(e[0] - hs * Math.cos(ang - 0.5), e[1] + hs * Math.sin(ang - 0.5));
+      ctx.lineTo(e[0] - hs * Math.cos(ang + 0.5), e[1] + hs * Math.sin(ang + 0.5));
+      ctx.closePath(); ctx.fill();
+    }
+    if (label) {
+      ctx.fillStyle = color;
+      ctx.font = "600 15px " + COL.mono;
+      ctx.fillText(label, e[0] + 8, e[1] - 8);
+    }
+    ctx.restore();
+  }
+
+  function drawUnitSquare(m) {
+    const d = det(m);
+    const o = apply(m, 0, 0), i = apply(m, 1, 0), ij = apply(m, 1, 1), j = apply(m, 0, 1);
+    const so = S(o[0], o[1]), si = S(i[0], i[1]), sij = S(ij[0], ij[1]), sj = S(j[0], j[1]);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(so[0], so[1]); ctx.lineTo(si[0], si[1]);
+    ctx.lineTo(sij[0], sij[1]); ctx.lineTo(sj[0], sj[1]); ctx.closePath();
+    ctx.fillStyle = d < 0 ? COL.flip : COL.jHat;
+    ctx.globalAlpha = 0.16; ctx.fill();
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawGridLines(ID, COL.gridOrig, 1, 0.5);
+    drawGridLines(cur, COL.gridMoved, 1.4, 0.85);
+    drawAxes();
+    drawUnitSquare(cur);
+    arrow(cur[0], cur[2], COL.iHat, "î");
+    arrow(cur[1], cur[3], COL.jHat, "ĵ");
+  }
+
+  const readA = () => {
+    const v = (el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; };
+    return [v(inputs.a0), v(inputs.a1), v(inputs.a2), v(inputs.a3)];
+  };
+  const readB = () => {
+    const v = (el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; };
+    return [v(inputs.b0), v(inputs.b1), v(inputs.b2), v(inputs.b3)];
+  };
+  function writeAB(A, B) {
+    inputs.a0.value = LA.fmt(A[0]); inputs.a1.value = LA.fmt(A[1]);
+    inputs.a2.value = LA.fmt(A[2]); inputs.a3.value = LA.fmt(A[3]);
+    inputs.b0.value = LA.fmt(B[0]); inputs.b1.value = LA.fmt(B[1]);
+    inputs.b2.value = LA.fmt(B[2]); inputs.b3.value = LA.fmt(B[3]);
+  }
+
+  // The product matrix for the current order.
+  function product() {
+    const A = readA(), B = readB();
+    return orderAB ? mul(A, B) : mul(B, A);
+  }
+
+  function updateReadout() {
+    const A = readA(), B = readB();
+    const P = product();
+    document.getElementById("r-prod").textContent =
+      "[" + LA.fmt(P[0]) + ", " + LA.fmt(P[1]) + "; " + LA.fmt(P[2]) + ", " + LA.fmt(P[3]) + "]";
+    document.getElementById("r-detA").textContent = LA.fmt(det(A));
+    document.getElementById("r-detB").textContent = LA.fmt(det(B));
+    document.getElementById("r-detmul").textContent = LA.fmt(det(A) * det(B));
+    document.getElementById("r-detprod").textContent = LA.fmt(det(P));
+    // Relabel the order-dependent readout rows.
+    document.getElementById("r-prod-key").textContent = LA.t(orderAB ? "matmul.product" : "matmul.productBA");
+    document.getElementById("r-detprod-key").textContent = LA.t(orderAB ? "matmul.detProduct" : "matmul.detProductBA");
+  }
+
+  function setStageHint(key) {
+    document.getElementById("stage-hint").textContent = LA.t(key);
+  }
+
+  // Snap (no animation): show the final product directly.
+  function snap() {
+    cur = product().slice();
+    draw();
+  }
+
+  // Two-stage animation from identity.
+  //   AB order: identity -> B  (apply B), pause, -> AB  (then A)
+  //   BA order: identity -> A  (apply A), pause, -> BA  (then B)
+  function animate() {
+    updateReadout();
+    if (LA.reduceMotion) {
+      setStageHint(orderAB ? "matmul.thenA" : "matmul.thenB");
+      snap();
+      return;
+    }
+    const A = readA(), B = readB();
+    const first = orderAB ? B : A;            // matrix applied first
+    const finalP = product();                 // identity -> first -> final
+    const firstKey = orderAB ? "matmul.applyingB" : "matmul.applyingA";
+    const secondKey = orderAB ? "matmul.thenA" : "matmul.thenB";
+
+    const token = ++animToken;                // cancels any in-flight animation
+    cur = ID.slice();
+    draw();
+
+    runStage(token, ID.slice(), first, firstKey, function () {
+      setTimeout(function () {
+        if (token !== animToken) return;
+        runStage(token, first, finalP, secondKey, null);
+      }, PAUSE);
+    });
+  }
+
+  function runStage(token, from, to, hintKey, onDone) {
+    setStageHint(hintKey);
+    const start = performance.now();
+    function step(now) {
+      if (token !== animToken) return;        // a newer request superseded us
+      let t = (now - start) / DUR;
+      if (t > 1) t = 1;
+      const e = LA.easeInOut(t);
+      for (let k = 0; k < 4; k++) cur[k] = from[k] + (to[k] - from[k]) * e;
+      draw();
+      if (t < 1) requestAnimationFrame(step);
+      else if (onDone) onDone();
+    }
+    requestAnimationFrame(step);
+  }
+
+  function refresh() {
+    updateReadout();
+    // Inputs changed: cancel any animation and show the current product.
+    animToken++;
+    snap();
+  }
+
+  function setOrderLabel() {
+    document.getElementById("order").textContent = LA.t(orderAB ? "matmul.showBA" : "matmul.showAB");
+    document.getElementById("stage-hint").textContent = LA.t(orderAB ? "matmul.stageHint" : "matmul.stageHintBA");
+  }
+
+  Object.values(inputs).forEach((el) => el.addEventListener("input", refresh));
+
+  document.getElementById("animate").addEventListener("click", animate);
+
+  document.getElementById("order").addEventListener("click", () => {
+    orderAB = !orderAB;
+    setOrderLabel();
+    refresh();
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    orderAB = true;
+    writeAB([0, -1, 1, 0], [1, 1, 0, 1]);
+    setOrderLabel();
+    refresh();
+  });
+
+  document.querySelectorAll(".presets .btn").forEach((btn) => btn.addEventListener("click", () => {
+    const A = btn.dataset.a.split(",").map(Number);
+    const B = btn.dataset.b.split(",").map(Number);
+    writeAB(A, B);
+    refresh();
+  }));
+
+  // Re-read the themed palette and repaint when the light/dark theme flips.
+  LA.onThemeChange(() => { COL = LA.canvasColors(); draw(); });
+  // Re-localise the dynamic readout and captions when the language flips.
+  LA.onLangChange(() => { updateReadout(); setOrderLabel(); });
+  window.addEventListener("resize", resize);
+
+  setOrderLabel();
+  resize();
+  updateReadout();
+  snap();
+})();
+</script>
+</body>
+</html>
