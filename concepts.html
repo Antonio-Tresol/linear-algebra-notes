@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concepts · Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shared.css">
+
+<script src="assets/shared.js"></script>
+</head>
+<body data-page="concepts">
+
+<header data-nav></header>
+
+<div class="hero">
+  <p class="eyebrow" data-i18n="concepts.kicker">Concept</p>
+  <h1 data-i18n="concepts.title">Concepts</h1>
+  <p data-i18n="concepts.intro">Visual explainers for the ideas the transformations rest on.</p>
+</div>
+
+<main class="hub">
+  <a class="hub-card" href="span.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M30 170 L290 30" stroke="var(--grid-moved)" stroke-width="1.4" opacity="0.5"/>
+        <g stroke-width="3" stroke-linecap="round" fill="none">
+          <line x1="160" y1="100" x2="220" y2="68" stroke="var(--vec-i)"/>
+          <line x1="160" y1="100" x2="120" y2="124" stroke="var(--vec-j)"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="concepts.kicker">Concept</span>
+      <div class="hub-card__title" data-i18n="concepts.span.title">Span</div>
+      <p class="hub-card__desc" data-i18n="concepts.span.desc"></p>
+    </div>
+  </a>
+
+  <a class="hub-card" href="subspaces.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M70 60 L250 60 L250 140 L70 140 Z" fill="var(--vec-j)" opacity="0.1"/>
+        <line x1="70" y1="140" x2="250" y2="60" stroke="var(--vec-flip)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="40" y1="100" x2="280" y2="100" stroke="var(--axis)" stroke-width="1" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="concepts.kicker">Concept</span>
+      <div class="hub-card__title" data-i18n="concepts.subspaces.title">Rank, column &amp; null space</div>
+      <p class="hub-card__desc" data-i18n="concepts.subspaces.desc"></p>
+    </div>
+  </a>
+
+  <a class="hub-card" href="dimensions.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke-width="2.5" stroke-linecap="round" fill="none">
+          <line x1="60" y1="130" x2="40" y2="120" stroke="var(--vec-i)"/>
+          <line x1="60" y1="130" x2="92" y2="118" stroke="var(--vec-j)"/>
+          <line x1="60" y1="130" x2="60" y2="80" stroke="var(--vec-k)"/>
+        </g>
+        <path d="M150 100 L185 100" stroke="var(--muted)" stroke-width="2" marker-end="url(#a)"/>
+        <path d="M150 90 L168 110" stroke="var(--muted)" stroke-width="1.5"/>
+        <g stroke-width="3" stroke-linecap="round" fill="none">
+          <line x1="240" y1="120" x2="280" y2="108" stroke="var(--vec-i)"/>
+          <line x1="240" y1="120" x2="232" y2="86" stroke="var(--vec-j)"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="concepts.kicker">Concept</span>
+      <div class="hub-card__title" data-i18n="concepts.dimensions.title">Maps between dimensions</div>
+      <p class="hub-card__desc" data-i18n="concepts.dimensions.desc"></p>
+    </div>
+  </a>
+
+  <a class="hub-card" href="dotproduct.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke-width="3" stroke-linecap="round" fill="none">
+          <line x1="120" y1="140" x2="240" y2="80" stroke="var(--vec-i)"/>
+          <line x1="120" y1="140" x2="200" y2="150" stroke="var(--vec-j)"/>
+        </g>
+        <line x1="200" y1="150" x2="223" y2="138" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <path d="M138 134 a8 8 0 0 0 6 12" stroke="var(--muted)" stroke-width="1.4" fill="none"/>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="concepts.kicker">Concept</span>
+      <div class="hub-card__title" data-i18n="concepts.dot.title">Dot product</div>
+      <p class="hub-card__desc" data-i18n="concepts.dot.desc"></p>
+    </div>
+  </a>
+</main>
+
+<footer data-footer></footer>
+
+<script src="content/strings.en.js"></script>
+<script src="content/strings.es.js"></script>
+<script>
+(function () {
+  function localize() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+  }
+  localize();
+  LA.onLangChange(localize);
+})();
+</script>
+</body>
+</html>

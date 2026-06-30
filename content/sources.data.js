@@ -87,6 +87,12 @@
       access: "free",
       url: "https://www.3blue1brown.com/lessons/3d-transformations", urlLabel: "watch",
     },
+    "3b1b-nonsquare": {
+      kind: "video", short: "3Blue1Brown",
+      author: "3Blue1Brown", title: "Nonsquare matrices as transformations between dimensions",
+      access: "free",
+      url: "https://www.3blue1brown.com/lessons/nonsquare-matrices", urlLabel: "watch",
+    },
     "3b1b-determinant": {
       kind: "video", short: "3Blue1Brown",
       author: "3Blue1Brown", title: "The determinant",

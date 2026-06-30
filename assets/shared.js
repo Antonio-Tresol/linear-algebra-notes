@@ -157,6 +157,7 @@
     { id: "2d", href: "2d.html", label: "nav.2d" },
     { id: "3d", href: "3d.html", label: "nav.3d" },
     { id: "matmul", href: "matmul.html", label: "nav.matmul" },
+    { id: "concepts", href: "concepts.html", label: "nav.concepts" },
     { id: "glossary", href: "glossary.html", label: "nav.glossary" },
     { id: "notation", href: "notation.html", label: "nav.notation" },
     { id: "notes", href: "notes.html", label: "nav.notes" },

@@ -126,8 +126,21 @@
     "viz3d.p.squash": "Aplastar al plano",
 
     "nav.matmul": "Multiplicar",
+    "nav.concepts": "Conceptos",
     "keyideas.label": "Ideas clave para recordar",
     "glossary.theorems": "Teoremas",
+
+    "concepts.title": "Conceptos",
+    "concepts.intro": "Explicaciones visuales de las ideas en las que se apoyan las transformaciones. Cada una es interactiva y citada.",
+    "concepts.kicker": "Concepto",
+    "concepts.span.title": "Espacio generado",
+    "concepts.span.desc": "Arrastra vectores y observa qué generan: una recta, un plano o todo el espacio, y el momento en que se vuelven dependientes.",
+    "concepts.subspaces.title": "Rango, espacio columna y núcleo",
+    "concepts.subspaces.desc": "Mira qué sobrevive a una aplicación y qué colapsa: espacio columna, núcleo, rango, y por qué det = 0 significa singular.",
+    "concepts.dimensions.title": "Aplicaciones entre dimensiones",
+    "concepts.dimensions.desc": "Las matrices no cuadradas llevan el espacio n-dimensional a m dimensiones. Mira cómo el 3D se aplasta a un plano, o el plano se eleva al espacio.",
+    "concepts.dot.title": "Producto escalar",
+    "concepts.dot.desc": "Arrastra dos vectores para ver el producto escalar como longitud por longitud por el coseno del ángulo entre ellos.",
 
     "home.matmul.kicker": "Interactivo",
     "home.matmul.title": "Multiplicación de matrices",

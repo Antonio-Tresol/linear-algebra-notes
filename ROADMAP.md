@@ -53,6 +53,7 @@ sections that compose into one "Subspaces explorer"). All cited, all key-ideas s
   - **Non-square multiplication as composition of dimension changes:** `(m×n)(n×p)` is the chain `Rᵖ → Rⁿ → Rᵐ`; the inner dimensions must match. Visualise the two hops, and show why a `2×3` times a `3×2` gives a `2×2` map of the plane to itself, etc.
   - Needs a new glossary term ("rectangular / non-square matrix") and a new source entry for the 3Blue1Brown "Nonsquare matrices" lesson in `content/sources.data.js`.
 - Rank–nullity should fall out visually (surviving directions + collapsed directions = input dimension), linking to the `rank-nullity` theorem already in the glossary. Non-square maps make rank vivid: a `3×2` map has rank at most 2, so its image is at most a plane inside 3D.
+- **Dot product:** drag two vectors `u`, `v` in the plane; show `u·v` as a number, the angle between them, and the projection of one onto the other, so `u·v = ‖u‖‖v‖cosθ` becomes visible (positive when aligned, zero when perpendicular, negative when opposed). Ground in 3Blue1Brown "Dot products and duality" (the row-vector / linear-functional view: `u·v` is `uᵀ` applied to `v`), which ties straight to the `1×n` non-square map onto the number line. Cite `3b1b-dot-products`. Links the `dot-product` glossary term.
 
 **Files:** `concepts/*.html` or a `subspaces.html` explorer + `content/*.data.js` for any structured bits. New nav group.
 

@@ -128,8 +128,21 @@
     "viz3d.p.squash": "Squash to plane",
 
     "nav.matmul": "Multiply",
+    "nav.concepts": "Concepts",
     "keyideas.label": "Key ideas to remember",
     "glossary.theorems": "Theorems",
+
+    "concepts.title": "Concepts",
+    "concepts.intro": "Visual explainers for the ideas the transformations rest on. Each one is interactive and cited.",
+    "concepts.kicker": "Concept",
+    "concepts.span.title": "Span",
+    "concepts.span.desc": "Drag vectors and watch what they span: a line, a plane, or all of space, and the moment they become dependent.",
+    "concepts.subspaces.title": "Rank, column & null space",
+    "concepts.subspaces.desc": "See what survives a map and what collapses: column space, null space, rank, and why det = 0 means singular.",
+    "concepts.dimensions.title": "Maps between dimensions",
+    "concepts.dimensions.desc": "Non-square matrices send n-dimensional space to m dimensions. Watch 3D squash to a plane, or the plane lift into space.",
+    "concepts.dot.title": "Dot product",
+    "concepts.dot.desc": "Drag two vectors to see the dot product as length times length times the cosine of the angle between them.",
 
     "home.matmul.kicker": "Interactive",
     "home.matmul.title": "Matrix multiplication",
