@@ -64,6 +64,18 @@
     "home.notes.title": "Notas",
     "home.notes.desc": "Notas extensas con definiciones emergentes en cualquier término subrayado.",
 
+    "viz.tab.transform": "Transformar",
+    "viz.tab.inverse": "Inversa",
+    "viz.tab.compose": "Componer",
+    "viz.inv.sub": "La inversa A⁻¹ deshace A. Aplica A, luego A⁻¹, y el espacio vuelve a donde empezó.",
+    "viz.inv.applyUndo": "Aplicar A y deshacer",
+    "viz.inv.label": "Inversa A⁻¹",
+    "viz.inv.none": "det(A) = 0, así que A aplasta el espacio sobre una recta. No hay inversa: un colapso no se puede deshacer.",
+    "viz.inv.stageApply": "Aplicando A",
+    "viz.inv.stageUndo": "Deshaciendo con A⁻¹",
+    "viz.shapes.label": "Coloca una figura (arrástrala por el espacio)",
+    "viz.shapes.clear": "Borrar figuras",
+
     "viz.presets": "Preajustes",
     "viz.readout": "Lectura",
     "viz.animate": "Animar desde la identidad",

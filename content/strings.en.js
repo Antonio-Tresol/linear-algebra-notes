@@ -66,6 +66,18 @@
     "home.notes.title": "Notes",
     "home.notes.desc": "Longer-form notes with hover-card definitions on any underlined term.",
 
+    "viz.tab.transform": "Transform",
+    "viz.tab.inverse": "Inverse",
+    "viz.tab.compose": "Compose",
+    "viz.inv.sub": "The inverse A⁻¹ undoes A. Apply A, then A⁻¹, and space returns to where it began.",
+    "viz.inv.applyUndo": "Apply A, then undo",
+    "viz.inv.label": "Inverse A⁻¹",
+    "viz.inv.none": "det(A) = 0, so A flattens space onto a line. There is no inverse: a collapse cannot be undone.",
+    "viz.inv.stageApply": "Applying A",
+    "viz.inv.stageUndo": "Undoing with A⁻¹",
+    "viz.shapes.label": "Drop a shape (drag it in the space)",
+    "viz.shapes.clear": "Clear shapes",
+
     "viz.presets": "Presets",
     "viz.readout": "Readout",
     "viz.animate": "Animate from identity",
