@@ -6,7 +6,7 @@
   var S = (window.LA_STRINGS = window.LA_STRINGS || {});
   S.en = {
     "site.brand": "Linear algebra, visually",
-    "site.footer": "Visual notes for linear algebra — built with plain HTML, Canvas2D and KaTeX.",
+    "site.footer": "Visual notes for linear algebra, built with plain HTML, Canvas2D and KaTeX.",
 
     "nav.home": "Home",
     "nav.2d": "2D",
@@ -43,13 +43,13 @@
     "notes.serveHint": "Notes are fetched at runtime, so this page needs to be served over http(s) (GitHub Pages or a local server), not opened as a file://.",
 
     "cite.free": "free",
-    "cite.openAccess": "open access — free PDF",
+    "cite.openAccess": "open access, free PDF",
     "cite.paid": "paid",
     "cite.video": "video",
 
     "home.eyebrow": "Visual notes",
     "home.title": "Linear algebra you can see",
-    "home.lede": "Durable, visual notes for linear algebra — the thing to reach for when you've forgotten what a determinant <em>means</em>, not just how to compute one. Definitions and notation are the spine; the interactive visualisations hang off them. Every definition cites two standard texts and, where one explains it best, a video.",
+    "home.lede": "Durable, visual notes for linear algebra: the thing to reach for when you've forgotten what a determinant <em>means</em>, not just how to compute one. Definitions and notation are the spine; the interactive visualisations hang off them. Every definition cites two standard texts and, where one explains it best, a video.",
     "home.2d.kicker": "Interactive",
     "home.2d.title": "2D transformations",
     "home.2d.desc": "Type a 2×2 matrix and watch the grid bend. The shaded unit square's area is the determinant.",

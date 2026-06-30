@@ -19,7 +19,7 @@
     rows: {
       R: { name: "Real numbers", meaning: "The number line; ordinary scalars.", read: "R" },
       Rn: { name: "Real n-space", meaning: "All length-$n$ lists of real numbers.", read: "R-n" },
-      F: { name: "A field", meaning: "Scalars you may use — usually $\\mathbb{R}$ or $\\mathbb{C}$.", read: "F" },
+      F: { name: "A field", meaning: "Scalars you may use, usually $\\mathbb{R}$ or $\\mathbb{C}$.", read: "F" },
       V: { name: "Vector spaces", meaning: "Abstract spaces where vectors live.", read: "V, W" },
       subset: { name: "Subspace", meaning: "$U$ is a subspace sitting inside $V$.", read: "U in V" },
       dim: { name: "Dimension", meaning: "Number of vectors in a basis of $V$.", read: "dim V" },

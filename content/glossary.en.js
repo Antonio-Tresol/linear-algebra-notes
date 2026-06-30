@@ -5,7 +5,7 @@
   T.en = {
     "vector": {
       term: "Vector",
-      short: "An arrow from the origin, or equally a list of numbers — the coordinates of its tip. Both pictures are the same object seen two ways.",
+      short: "An arrow from the origin, or equally a list of numbers, the coordinates of its tip. Both pictures are the same object seen two ways.",
       formal: "An element of a vector space. In $\\mathbb{R}^n$, an ordered list $(x_1,\\dots,x_n)$ that you can add componentwise and scale by a number.",
     },
     "vector-space": {
@@ -25,12 +25,12 @@
     },
     "span": {
       term: "Span",
-      short: "Everything you can reach from a set of vectors using linear combinations — the whole line, plane, or space they generate.",
+      short: "Everything you can reach from a set of vectors using linear combinations: the whole line, plane, or space they generate.",
       formal: "$\\operatorname{span}(v_1,\\dots,v_k)$ is the set of all linear combinations $a_1v_1+\\cdots+a_kv_k$. It is the smallest subspace containing those vectors.",
     },
     "linear-independence": {
       term: "Linear independence",
-      short: "No vector in the set is reachable from the others — none is redundant. Remove any one and the span shrinks.",
+      short: "No vector in the set is reachable from the others, so none is redundant. Remove any one and the span shrinks.",
       formal: "$v_1,\\dots,v_k$ are **linearly independent** if $a_1v_1+\\cdots+a_kv_k=0$ forces every $a_i=0$. Otherwise they are dependent.",
     },
     "basis": {
@@ -45,7 +45,7 @@
     },
     "dimension": {
       term: "Dimension",
-      short: "How many independent directions a space has — the number of vectors in any basis. A line is 1, a plane is 2.",
+      short: "How many independent directions a space has, the number of vectors in any basis. A line is 1, a plane is 2.",
       formal: "$\\dim V$ is the length of any basis of $V$. Every basis of a finite-dimensional space has the same length, so this is well defined.",
     },
     "linear-map": {
@@ -60,7 +60,7 @@
     },
     "matrix-multiplication": {
       term: "Matrix multiplication",
-      short: "Composing two maps into one: $AB$ means 'do $B$, then $A$'. Not commutative — order is everything.",
+      short: "Composing two maps into one: $AB$ means 'do $B$, then $A$'. Not commutative; order is everything.",
       formal: "For $A\\in\\mathbb{R}^{m\\times n}$, $B\\in\\mathbb{R}^{n\\times p}$, the product $AB$ has entries $(AB)_{ij}=\\sum_{k} a_{ik}b_{kj}$, and represents the composition $A\\circ B$.",
     },
     "identity": {
@@ -70,7 +70,7 @@
     },
     "transpose": {
       term: "Transpose",
-      short: "Flip a matrix across its main diagonal — rows become columns. Reverses the order of a product: $(AB)^{\\mathsf T}=B^{\\mathsf T}A^{\\mathsf T}$.",
+      short: "Flip a matrix across its main diagonal, so rows become columns. Reverses the order of a product: $(AB)^{\\mathsf T}=B^{\\mathsf T}A^{\\mathsf T}$.",
       formal: "$(A^{\\mathsf T})_{ij}=A_{ji}$. An $m\\times n$ matrix becomes $n\\times m$. Symmetric means $A=A^{\\mathsf T}$.",
     },
     "invertible": {
@@ -85,12 +85,12 @@
     },
     "null-space": {
       term: "Null space (kernel)",
-      short: "All the vectors a map sends to zero. Bigger null space means more collapse — and a singular, non-invertible map.",
+      short: "All the vectors a map sends to zero. Bigger null space means more collapse, and a singular, non-invertible map.",
       formal: "$\\mathcal N(A)=\\{x: Ax=0\\}$, a subspace of the domain. $A$ is injective $\\iff \\mathcal N(A)=\\{0\\}$.",
     },
     "rank": {
       term: "Rank",
-      short: "The number of independent directions that survive the map — the dimension of its output (column) space. How much room the image fills.",
+      short: "The number of independent directions that survive the map: the dimension of its output (column) space. How much room the image fills.",
       formal: "$\\operatorname{rank}(A)=\\dim(\\text{column space of }A)$. Rank–nullity: $\\operatorname{rank}(A)+\\dim\\mathcal N(A)=n$.",
     },
     "determinant": {
@@ -125,22 +125,22 @@
     },
     "orthonormal": {
       term: "Orthonormal set",
-      short: "Vectors that are mutually perpendicular and each of length one — a perfectly square, unit-scaled coordinate frame.",
+      short: "Vectors that are mutually perpendicular and each of length one: a perfectly square, unit-scaled coordinate frame.",
       formal: "Vectors with $q_i\\cdot q_j=\\delta_{ij}$ (1 if $i=j$, else 0). An orthonormal basis makes coordinates trivial: $a_i=q_i\\cdot v$.",
     },
     "projection": {
       term: "Projection",
-      short: "The shadow of a vector onto a line or subspace — the closest point in it. The error you drop is perpendicular to the subspace.",
+      short: "The shadow of a vector onto a line or subspace: the closest point in it. The error you drop is perpendicular to the subspace.",
       formal: "Onto the line through $a$: $P=\\dfrac{aa^{\\mathsf T}}{a^{\\mathsf T}a}$, with $Pb$ the nearest point of the line to $b$ and $b-Pb\\perp a$.",
     },
     "rotation": {
       term: "Rotation",
-      short: "Turns space about the origin by an angle, keeping every length and angle — and orientation. A rigid spin.",
+      short: "Turns space about the origin by an angle, keeping every length and angle, and orientation too. A rigid spin.",
       formal: "In $\\mathbb{R}^2$, $R_\\theta=\\begin{psmallmatrix}\\cos\\theta&-\\sin\\theta\\\\\\sin\\theta&\\cos\\theta\\end{psmallmatrix}$, with $\\det=1$ and $R^{\\mathsf T}R=I$ (orthogonal).",
     },
     "shear": {
       term: "Shear",
-      short: "Slides space parallel to a line — like pushing a deck of cards sideways. Areas are untouched ($\\det=1$), but angles bend.",
+      short: "Slides space parallel to a line, like pushing a deck of cards sideways. Areas are untouched ($\\det=1$), but angles bend.",
       formal: "E.g. $\\begin{psmallmatrix}1&k\\\\0&1\\end{psmallmatrix}$ fixes the $x$-axis and slides each point horizontally by $k$ times its height. Determinant $1$.",
     },
   };

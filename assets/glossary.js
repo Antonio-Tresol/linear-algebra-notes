@@ -57,8 +57,9 @@
       var where = [];
       if (cite.sec) where.push('<span class="cite__where">' + esc(cite.sec) + "</span>");
       if (cite.page != null) where.push('<span class="cite__page">p. ' + cite.page + "</span>");
-      body.push(where.join(" "));
-      body.push("— <i>" + esc(s.title) + "</i>" + (s.edition ? ", " + esc(s.edition) : ""));
+      var loc = where.join(" ");
+      var title = "<i>" + esc(s.title) + "</i>" + (s.edition ? ", " + esc(s.edition) : "");
+      body.push((loc ? loc + ", " : "") + title);
     }
     var links = ['<a class="cite__link" href="' + s.url + '" target="_blank" rel="noopener">' + esc(s.urlLabel) + " ↗</a>"];
     if (s.alsoUrl) links.push('<a class="cite__link" href="' + s.alsoUrl + '" target="_blank" rel="noopener">' + esc(s.alsoLabel) + " ↗</a>");

@@ -4,7 +4,7 @@
   var S = (window.LA_STRINGS = window.LA_STRINGS || {});
   S.es = {
     "site.brand": "Álgebra lineal, visual",
-    "site.footer": "Notas visuales de álgebra lineal — hechas con HTML, Canvas2D y KaTeX.",
+    "site.footer": "Notas visuales de álgebra lineal, hechas con HTML, Canvas2D y KaTeX.",
 
     "nav.home": "Inicio",
     "nav.2d": "2D",
@@ -41,13 +41,13 @@
     "notes.serveHint": "Las notas se cargan en tiempo de ejecución, así que esta página debe servirse por http(s) (GitHub Pages o un servidor local), no abrirse como file://.",
 
     "cite.free": "gratis",
-    "cite.openAccess": "acceso abierto — PDF gratuito",
+    "cite.openAccess": "acceso abierto, PDF gratuito",
     "cite.paid": "de pago",
     "cite.video": "vídeo",
 
     "home.eyebrow": "Notas visuales",
     "home.title": "Álgebra lineal que puedes ver",
-    "home.lede": "Notas visuales y duraderas de álgebra lineal — lo que buscas cuando olvidaste qué <em>significa</em> un determinante, no solo cómo calcularlo. Las definiciones y la notación son la columna; las visualizaciones interactivas cuelgan de ellas. Cada definición cita dos textos de referencia y, cuando lo explica mejor, un vídeo.",
+    "home.lede": "Notas visuales y duraderas de álgebra lineal: lo que buscas cuando olvidaste qué <em>significa</em> un determinante, no solo cómo calcularlo. Las definiciones y la notación son la columna; las visualizaciones interactivas cuelgan de ellas. Cada definición cita dos textos de referencia y, cuando lo explica mejor, un vídeo.",
     "home.2d.kicker": "Interactivo",
     "home.2d.title": "Transformaciones 2D",
     "home.2d.desc": "Escribe una matriz 2×2 y mira cómo se dobla la malla. El área del cuadrado unidad sombreado es el determinante.",
