@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maps between dimensions · Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/shared.css?v=20260629i">
+
+<script src="assets/shared.js?v=20260629i"></script>
+<style>
+  /* Split stage: input space on the left, output space on the right. Each
+     canvas needs its OWN wrapper because LA.fitCanvas sizes off parentElement.
+     .stage only sets min-height, so give it a definite height here — otherwise
+     the inner panes' height:100% is indefinite and the canvases grow huge. */
+  .viz .stage { height: 520px; }
+  .dim-split { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+  .dim-pane { position: relative; min-height: 0; }
+  .dim-pane + .dim-pane { border-left: 1px solid var(--border); }
+  .dim-pane canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  .dim-pane__tag {
+    position: absolute; top: 9px; left: 12px;
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; color: var(--muted);
+    background: color-mix(in srgb, var(--canvas-bg) 78%, transparent);
+    padding: 2px 7px; border-radius: 6px; pointer-events: none;
+  }
+  .dim-pane--3d canvas { cursor: grab; }
+  .dim-pane--3d canvas:active { cursor: grabbing; }
+  @media (max-width: 880px) {
+    .viz .stage { height: 640px; }
+    .dim-split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    .dim-pane + .dim-pane { border-left: none; border-top: 1px solid var(--border); }
+  }
+  .dim-cite { font-family: var(--font-display); font-size: 11.5px; color: var(--muted); margin: 12px 0 0; }
+  .dim-cite a { color: var(--vec-j); }
+  .readout .v.rank-full { color: var(--vec-k); }
+  .readout .v.rank-low { color: var(--vec-flip); }
+  .dim-note {
+    margin: 12px 0 0; padding: 9px 11px; border-radius: 8px;
+    font-family: var(--font-display); font-size: 12px; line-height: 1.5;
+    background: color-mix(in srgb, var(--vec-j) 11%, transparent);
+    color: var(--text);
+  }
+</style>
+</head>
+<body data-page="concepts">
+
+<header data-nav></header>
+
+<section class="viz">
+  <div class="stage" aria-hidden="false">
+    <div class="dim-split">
+      <div class="dim-pane" id="pane-in-wrap">
+        <canvas id="c-in" role="img" aria-label="Input space" data-i18n-aria="dim.aria.in"></canvas>
+        <span class="dim-pane__tag" id="tag-in" data-i18n="dim.tag.input">Input</span>
+      </div>
+      <div class="dim-pane" id="pane-out-wrap">
+        <canvas id="c-out" role="img" aria-label="Output space" data-i18n-aria="dim.aria.out"></canvas>
+        <span class="dim-pane__tag" id="tag-out" data-i18n="dim.tag.output">Output</span>
+      </div>
+    </div>
+    <div class="stage-hint" id="stage-hint" data-i18n="dim.stageHint">Each column is where an input basis vector lands.</div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <div class="tabs" role="tablist" aria-label="Matrix shape" id="dim-cases">
+        <button class="tab" id="case-23" role="tab" aria-selected="true" data-case="23" data-i18n="dim.case.23" aria-label="2 by 3 matrix, maps R3 to R2" data-i18n-aria="dim.case.23.aria">2×3</button>
+        <button class="tab" id="case-32" role="tab" aria-selected="false" tabindex="-1" data-case="32" data-i18n="dim.case.32" aria-label="3 by 2 matrix, maps R2 to R3" data-i18n-aria="dim.case.32.aria">3×2</button>
+        <button class="tab" id="case-12" role="tab" aria-selected="false" tabindex="-1" data-case="12" data-i18n="dim.case.12" aria-label="1 by 2 matrix, maps R2 to R1" data-i18n-aria="dim.case.12.aria">1×2</button>
+      </div>
+
+      <h1 data-i18n="dim.title">Non-square maps between dimensions</h1>
+      <p class="sub" data-i18n-html="dim.sub">A non-square <em>m×n</em> matrix is a linear map from <em>n</em>-dimensional input to <em>m</em>-dimensional output. Its <em>n</em> columns are where the <em>n</em> input basis vectors land, now living in the output. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#rank">rank</a>.</p>
+
+      <p class="label" id="dim-matrix-label" data-i18n="dim.matrixLabel">The matrix</p>
+      <div class="matrix-row">
+        <div class="bracket">[</div>
+        <div class="cells" id="dim-cells"></div>
+      </div>
+      <div class="col-key" id="dim-colkey"></div>
+
+      <div class="buttons">
+        <button id="dim-reset" class="btn" data-i18n="viz.reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.presets">Presets</p>
+      <div class="presets" id="dim-presets"></div>
+    </div>
+
+    <div class="card">
+      <p class="label" data-i18n="viz.readout">Readout</p>
+      <div class="readout">
+        <div class="line"><span class="k" data-i18n="dim.maps">maps</span><span class="v" id="dim-r-maps">R³ → R²</span></div>
+        <div class="line"><span class="k" data-i18n="dim.rank">rank</span><span class="v" id="dim-r-rank">2</span></div>
+        <div class="line"><span class="k" data-i18n="dim.image">image</span><span class="v" id="dim-r-image">the whole plane</span></div>
+      </div>
+      <p class="dim-note" id="dim-note" data-i18n="dim.note.squash">Three inputs collapse into two dimensions, so some directions must be flattened away: the map has a non-trivial null space.</p>
+      <p class="hint" id="dim-keyidea" data-i18n-html="dim.keyidea"><strong>Key idea.</strong> The columns are the images of the input basis vectors. Reading where î, ĵ (and k̂) land in the output space tells you the whole map.</p>
+      <p class="dim-cite">▶ <a href="https://www.3blue1brown.com/lessons/nonsquare-matrices" target="_blank" rel="noopener" data-i18n="dim.cite">3Blue1Brown: Nonsquare matrices as transformations between dimensions ↗</a></p>
+    </div>
+  </div>
+</section>
+
+<footer data-footer></footer>
+
+<script src="content/strings.en.js?v=20260629i"></script>
+<script src="content/strings.es.js?v=20260629i"></script>
+<script src="content/sources.data.js?v=20260629i"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script>
+// Localise [data-i18n]/[data-i18n-html]/[data-i18n-aria]; re-run on language flip.
+// (No key-ideas card here: data-page="concepts" would pull the wrong list — same
+//  choice as dotproduct.html.)
+(function () {
+  function paint() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", LA.t(el.getAttribute("data-i18n-aria"))); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  LA.onLangChange(paint);
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const SUB = ["₀","₁","₂","₃","₄","₅","₆","₇","₈","₉"];
+  const supR = { 1: "R¹", 2: "R²", 3: "R³" };
+
+  let COL = LA.canvasColors();
+
+  // -----------------------------------------------------------------------
+  //  State: the matrix is stored COLUMN-WISE.  cols[c] is column c, a vector
+  //  of length m (the output dimension).  Column c IS where input basis
+  //  vector e_c lands — that is the whole idea, kept literal here.
+  // -----------------------------------------------------------------------
+  // Each case: n = input dim (number of columns), m = output dim (column length).
+  const CASES = {
+    "23": { n: 3, m: 2, // R3 -> R2
+      cols: [[1,0],[0,1],[0,0]],
+      presets: [
+        { key: "dim.p.dropZ",   cols: [[1,0],[0,1],[0,0]] },
+        { key: "dim.p.project", cols: [[1,0],[0,1],[0.5,0.5]] },
+        { key: "dim.p.collapseLine", cols: [[1,0],[2,0],[0,0]] },
+        { key: "dim.p.skew",    cols: [[1,0.3],[0.4,1],[-0.6,0.7]] },
+      ],
+    },
+    "32": { n: 2, m: 3, // R2 -> R3
+      cols: [[1,0,0],[0,1,0]],
+      presets: [
+        { key: "dim.p.embedXY", cols: [[1,0,0],[0,1,0]] },
+        { key: "dim.p.tilt",    cols: [[1,0,0.4],[0,1,0.4]] },
+        { key: "dim.p.slant",   cols: [[1,0,0],[0.3,0.8,1]] },
+        { key: "dim.p.lineIn3", cols: [[1,1,1],[2,2,2]] },
+      ],
+    },
+    "12": { n: 2, m: 1, // R2 -> R1
+      cols: [[1],[0]],
+      presets: [
+        { key: "dim.p.readX",   cols: [[1],[0]] },
+        { key: "dim.p.sum",     cols: [[1],[1]] },
+        { key: "dim.p.diff",    cols: [[1],[-1]] },
+        { key: "dim.p.zero",    cols: [[0],[0]] },
+      ],
+    },
+  };
+
+  let caseId = "23";
+  let cols = CASES[caseId].cols.map((c) => c.slice());
+  const cur = () => CASES[caseId];
+
+  // basis colours, indexed by input column
+  function colColor(c) { return c === 0 ? COL.iHat : c === 1 ? COL.jHat : COL.kHat; }
+  function colLabel(c) { return c === 0 ? "î" : c === 1 ? "ĵ" : "k̂"; }
+
+  // -----------------------------------------------------------------------
+  //  Canvases.  Two independent renderers, paired per case.
+  // -----------------------------------------------------------------------
+  const cvIn = document.getElementById("c-in");
+  const cvOut = document.getElementById("c-out");
+  const ctxIn = cvIn.getContext("2d");
+  const ctxOut = cvOut.getContext("2d");
+
+  // per-canvas viewport metrics
+  const VP = {
+    in:  { ctx: ctxIn,  cv: cvIn,  W: 0, H: 0, cx: 0, cy: 0, scale: 50 },
+    out: { ctx: ctxOut, cv: cvOut, W: 0, H: 0, cx: 0, cy: 0, scale: 50 },
+  };
+
+  // shared 3D camera (a fixed pleasant angle; orbit applies to whichever pane
+  // is currently the 3D one).
+  let yaw = -0.62, pitch = -0.42, zoom = 1.0;
+  const camDist = 9, focal = 1;
+
+  function fitOne(v) {
+    const dim = LA.fitCanvas(v.cv, v.ctx);
+    v.W = dim.W; v.H = dim.H; v.cx = v.W / 2; v.cy = v.H / 2;
+    v.scale = Math.max(26, Math.min(v.W, v.H) / (2 * 6.0));
+    v.pixelScale = Math.min(v.W, v.H) * 0.92;
+  }
+
+  // ---------- 2D drawing (a grid + axes for a 2D space) ----------
+  const GRID_N = 7;
+  function s2(v, x, y) { return [v.cx + x * v.scale, v.cy - y * v.scale]; }
+
+  function draw2DGrid(v) {
+    const ctx = v.ctx;
+    ctx.save();
+    ctx.strokeStyle = COL.gridOrig; ctx.lineWidth = 1; ctx.globalAlpha = 0.5;
+    ctx.beginPath();
+    for (let i = -GRID_N; i <= GRID_N; i++) {
+      let a = s2(v, i, -GRID_N), b = s2(v, i, GRID_N);
+      ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
+      let c = s2(v, -GRID_N, i), d = s2(v, GRID_N, i);
+      ctx.moveTo(c[0], c[1]); ctx.lineTo(d[0], d[1]);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1; ctx.strokeStyle = COL.axis; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    let l = s2(v, -GRID_N, 0), r = s2(v, GRID_N, 0);
+    ctx.moveTo(l[0], l[1]); ctx.lineTo(r[0], r[1]);
+    let bo = s2(v, 0, -GRID_N), to = s2(v, 0, GRID_N);
+    ctx.moveTo(bo[0], bo[1]); ctx.lineTo(to[0], to[1]);
+    ctx.stroke(); ctx.restore();
+  }
+
+  function arrow2(v, x, y, color, label) {
+    const ctx = v.ctx;
+    const o = s2(v, 0, 0), e = s2(v, x, y);
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.4; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+    const ang = Math.atan2(o[1] - e[1], e[0] - o[0]);
+    const len = Math.hypot(e[0] - o[0], e[1] - o[1]);
+    if (len > 6) {
+      const hs = 11;
+      ctx.beginPath();
+      ctx.moveTo(e[0], e[1]);
+      ctx.lineTo(e[0] - hs * Math.cos(ang - 0.5), e[1] + hs * Math.sin(ang - 0.5));
+      ctx.lineTo(e[0] - hs * Math.cos(ang + 0.5), e[1] + hs * Math.sin(ang + 0.5));
+      ctx.closePath(); ctx.fill();
+    }
+    if (label) { ctx.font = "600 14px " + COL.mono; ctx.fillText(label, e[0] + 7, e[1] - 7); }
+    ctx.restore();
+  }
+
+  // ---------- 3D drawing (port of 3d.html's camera) ----------
+  function rot(p) {
+    const cyaw = Math.cos(yaw), syaw = Math.sin(yaw);
+    let x1 = p[0] * cyaw + p[2] * syaw;
+    let z1 = -p[0] * syaw + p[2] * cyaw;
+    let y1 = p[1];
+    const cp = Math.cos(pitch), sp = Math.sin(pitch);
+    let y2 = y1 * cp - z1 * sp;
+    let z2 = y1 * sp + z1 * cp;
+    return [x1, y2, z2];
+  }
+  function proj(v, p) {
+    const r = rot(p);
+    let denom = camDist - r[2];
+    if (denom < 0.1) denom = 0.1;
+    const f = (focal / denom) * v.pixelScale * zoom;
+    return [v.cx + r[0] * f, v.cy - r[1] * f, r[2]];
+  }
+  function line3(v, p, q, color, width, alpha) {
+    const a = proj(v, p), b = proj(v, q), ctx = v.ctx;
+    ctx.save();
+    ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width;
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    ctx.restore();
+  }
+  function arrow3(v, tip, color, label) {
+    const ctx = v.ctx;
+    const o = proj(v, [0, 0, 0]), e = proj(v, tip);
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.0; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+    const ang = Math.atan2(e[1] - o[1], e[0] - o[0]);
+    const len = Math.hypot(e[0] - o[0], e[1] - o[1]);
+    if (len > 6) {
+      const hs = 10;
+      ctx.beginPath();
+      ctx.moveTo(e[0], e[1]);
+      ctx.lineTo(e[0] - hs * Math.cos(ang - 0.45), e[1] - hs * Math.sin(ang - 0.45));
+      ctx.lineTo(e[0] - hs * Math.cos(ang + 0.45), e[1] - hs * Math.sin(ang + 0.45));
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.font = "600 13px " + COL.mono; ctx.fillText(label, e[0] + 6, e[1] - 6);
+    ctx.restore();
+  }
+  function draw3DAxes(v) {
+    const A = 2.4;
+    line3(v, [-A, 0, 0], [A, 0, 0], COL.axis, 1, 0.55);
+    line3(v, [0, -A, 0], [0, A, 0], COL.axis, 1, 0.55);
+    line3(v, [0, 0, -A], [0, 0, A], COL.axis, 1, 0.55);
+  }
+  // light reference lattice — kept sparse so the half-width pane stays readable
+  function draw3DLattice(v) {
+    const N = 2;
+    for (let b = -N; b <= N; b++) {
+      for (let c = -N; c <= N; c++) {
+        line3(v, [-N, b, c], [N, b, c], COL.gridOrig, 1, 0.16);
+        line3(v, [b, -N, c], [b, N, c], COL.gridOrig, 1, 0.16);
+        line3(v, [b, c, -N], [b, c, N], COL.gridOrig, 1, 0.16);
+      }
+    }
+  }
+  // draw the 3 basis arrows of a 3D INPUT space (identity directions)
+  function draw3DBasis(v) {
+    arrow3(v, [1, 0, 0], COL.iHat, "î");
+    arrow3(v, [0, 1, 0], COL.jHat, "ĵ");
+    arrow3(v, [0, 0, 1], COL.kHat, "k̂");
+  }
+
+  // ---------- 1D drawing (a number line) ----------
+  function draw1DLine(v) {
+    const ctx = v.ctx;
+    const y = v.cy;
+    const sc = v.scale;
+    const ticks = 6;
+    ctx.save();
+    // axis
+    ctx.strokeStyle = COL.axis; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(v.cx - (ticks + 0.5) * sc, y); ctx.lineTo(v.cx + (ticks + 0.5) * sc, y);
+    ctx.stroke();
+    // ticks + labels
+    ctx.fillStyle = COL.muted; ctx.font = "11px " + COL.mono;
+    ctx.textAlign = "center";
+    for (let i = -ticks; i <= ticks; i++) {
+      const x = v.cx + i * sc;
+      ctx.strokeStyle = COL.gridOrig; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x, y + 5); ctx.stroke();
+      if (i !== 0) ctx.fillText(String(i), x, y + 20);
+    }
+    ctx.restore();
+  }
+  function mark1D(v, value, color, label) {
+    const ctx = v.ctx;
+    const y = v.cy;
+    const x = v.cx + value * v.scale;
+    ctx.save();
+    // arrow along the line from 0 to value
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3.2; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(v.cx, y); ctx.lineTo(x, y); ctx.stroke();
+    const dir = value >= 0 ? 1 : -1;
+    if (Math.abs(value) > 0.05) {
+      const hs = 9;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - dir * hs, y - hs * 0.7);
+      ctx.lineTo(x - dir * hs, y + hs * 0.7);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.font = "600 13px " + COL.mono; ctx.textAlign = "center";
+    ctx.fillText(label, x, y - 12);
+    ctx.restore();
+  }
+
+  // -----------------------------------------------------------------------
+  //  Master draw: pick the input + output renderer by case.
+  // -----------------------------------------------------------------------
+  function drawInput() {
+    const v = VP.in;
+    v.ctx.clearRect(0, 0, v.W, v.H);
+    if (cur().n === 3) { draw3DLattice(v); draw3DAxes(v); draw3DBasis(v); }
+    else {
+      draw2DGrid(v);
+      arrow2(v, 1, 0, COL.iHat, "î");
+      arrow2(v, 0, 1, COL.jHat, "ĵ");
+    }
+  }
+
+  function drawOutput() {
+    const v = VP.out;
+    v.ctx.clearRect(0, 0, v.W, v.H);
+    const m = cur().m;
+    if (m === 2) {
+      draw2DGrid(v);
+      // each column is where an input basis vector lands
+      for (let c = 0; c < cols.length; c++) arrow2(v, cols[c][0], cols[c][1], colColor(c), colLabel(c) + "→");
+    } else if (m === 3) {
+      draw3DLattice(v); draw3DAxes(v);
+      for (let c = 0; c < cols.length; c++) arrow3(v, [cols[c][0], cols[c][1], cols[c][2]], colColor(c), colLabel(c) + "→");
+    } else {
+      draw1DLine(v);
+      for (let c = 0; c < cols.length; c++) mark1D(v, cols[c][0], colColor(c), colLabel(c) + "→");
+    }
+  }
+
+  function drawAll() { drawInput(); drawOutput(); }
+
+  // which pane is the 3D one (for orbit + cursor)? input when n=3, output when m=3.
+  function threeDeePane() {
+    if (cur().n === 3) return "in";
+    if (cur().m === 3) return "out";
+    return null;
+  }
+
+  // -----------------------------------------------------------------------
+  //  Rank + image description.  Numeric rank with an epsilon.
+  // -----------------------------------------------------------------------
+  const EPS = 1e-9;
+  function rankOf() {
+    const m = cur().m, n = cur().n;
+    // gather the m×n entries as rows; simplest: test via columns we already have.
+    if (m === 1) {
+      // 1×n: rank 1 unless every entry ~0
+      let any = false;
+      for (let c = 0; c < n; c++) if (Math.abs(cols[c][0]) > EPS) any = true;
+      return any ? 1 : 0;
+    }
+    // m == 2 or 3, columns are vectors of length m. rank = dim of span.
+    const vs = cols.map((c) => c.slice());
+    // count independent columns via Gram-Schmidt-ish elimination
+    let basis = [];
+    for (const w of vs) {
+      let r = w.slice();
+      for (const b of basis) {
+        const dot = r.reduce((s, x, i) => s + x * b[i], 0);
+        const bb = b.reduce((s, x) => s + x * x, 0) || 1;
+        const k = dot / bb;
+        for (let i = 0; i < r.length; i++) r[i] -= k * b[i];
+      }
+      const nrm = Math.sqrt(r.reduce((s, x) => s + x * x, 0));
+      if (nrm > 1e-7) basis.push(r);
+    }
+    return Math.min(basis.length, Math.min(m, n));
+  }
+
+  // image-description i18n key chosen by (case-output-dim, rank)
+  function imageKey(rank, m) {
+    if (rank === 0) return "dim.img.point";
+    if (m === 1) return "dim.img.numberline";   // rank 1, output is R1
+    if (rank === 1) return "dim.img.line";
+    if (m === 2) return "dim.img.plane2";        // rank 2 fills R2
+    return "dim.img.plane3";                      // rank 2 plane inside R3
+  }
+
+  // -----------------------------------------------------------------------
+  //  Readout
+  // -----------------------------------------------------------------------
+  function readout() {
+    const m = cur().m, n = cur().n;
+    document.getElementById("dim-r-maps").textContent = supR[n] + " → " + supR[m];
+    const rank = rankOf();
+    const rkEl = document.getElementById("dim-r-rank");
+    rkEl.textContent = String(rank);
+    rkEl.className = "v " + (rank >= Math.min(m, n) ? "rank-full" : "rank-low");
+    document.getElementById("dim-r-image").textContent = LA.t(imageKey(rank, m));
+
+    // per-case note: 2×3 always has a non-trivial null space (n > m).
+    const note = document.getElementById("dim-note");
+    if (n > m) { note.hidden = false; note.textContent = LA.t("dim.note.squash"); }
+    else if (m > n) { note.hidden = false; note.textContent = LA.t("dim.note.embed"); }
+    else { note.hidden = true; }
+  }
+
+  // -----------------------------------------------------------------------
+  //  Matrix inputs (built per case; no element ids → no duplicate-id risk)
+  // -----------------------------------------------------------------------
+  let inputEls = []; // inputEls[row][colIndex]
+  function buildMatrix() {
+    const m = cur().m, n = cur().n;
+    const cells = document.getElementById("dim-cells");
+    cells.className = "cells " + (n === 3 ? "cells--3" : "cells--2");
+    cells.innerHTML = "";
+    inputEls = [];
+    for (let r = 0; r < m; r++) {
+      inputEls[r] = [];
+      for (let c = 0; c < n; c++) {
+        const inp = document.createElement("input");
+        inp.type = "number"; inp.step = "0.1";
+        inp.value = LA.fmt(cols[c][r]);
+        inp.setAttribute("aria-label", LA.t("dim.cellAria")
+          .replace("{r}", String(r + 1)).replace("{c}", String(c + 1)));
+        inp.addEventListener("input", () => {
+          const num = parseFloat(inp.value);
+          cols[c][r] = isFinite(num) ? num : 0;
+          drawOutput(); readout();
+        });
+        cells.appendChild(inp);
+        inputEls[r][c] = inp;
+      }
+    }
+    // colour key: one swatch per INPUT basis vector / column
+    const key = document.getElementById("dim-colkey");
+    key.className = "col-key " + (n === 3 ? "col-key--3" : "col-key--2");
+    key.innerHTML = "";
+    for (let c = 0; c < n; c++) {
+      const span = document.createElement("span");
+      const sw = document.createElement("span");
+      sw.className = "swatch"; sw.style.background = colColor(c);
+      const txt = document.createElement("span");
+      txt.textContent = LA.t("dim.lands").replace("{v}", colLabel(c));
+      span.appendChild(sw); span.appendChild(document.createTextNode(" ")); span.appendChild(txt);
+      key.appendChild(span);
+    }
+  }
+
+  function syncInputs() {
+    for (let r = 0; r < cur().m; r++)
+      for (let c = 0; c < cur().n; c++)
+        if (inputEls[r] && inputEls[r][c]) inputEls[r][c].value = LA.fmt(cols[c][r]);
+  }
+
+  // -----------------------------------------------------------------------
+  //  Presets
+  // -----------------------------------------------------------------------
+  function buildPresets() {
+    const wrap = document.getElementById("dim-presets");
+    wrap.innerHTML = "";
+    cur().presets.forEach((p) => {
+      const btn = document.createElement("button");
+      btn.className = "btn";
+      btn.setAttribute("data-i18n", p.key);
+      btn.textContent = LA.t(p.key);
+      btn.addEventListener("click", () => {
+        cols = p.cols.map((c) => c.slice());
+        syncInputs(); drawAll(); readout();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  // -----------------------------------------------------------------------
+  //  Pane tags + 3D class toggling
+  // -----------------------------------------------------------------------
+  function updateChrome() {
+    const n = cur().n, m = cur().m;
+    document.getElementById("tag-in").textContent =
+      LA.t("dim.tag.input") + " · " + supR[n];
+    document.getElementById("tag-out").textContent =
+      LA.t("dim.tag.output") + " · " + supR[m];
+    document.getElementById("dim-matrix-label").textContent =
+      LA.t("dim.matrixLabel") + " (" + m + "×" + n + ")";
+    document.getElementById("pane-in-wrap").classList.toggle("dim-pane--3d", n === 3);
+    document.getElementById("pane-out-wrap").classList.toggle("dim-pane--3d", m === 3);
+  }
+
+  // -----------------------------------------------------------------------
+  //  Case switching
+  // -----------------------------------------------------------------------
+  function setCase(id, focus) {
+    caseId = id;
+    cols = CASES[id].cols.map((c) => c.slice());
+    document.querySelectorAll("#dim-cases .tab").forEach((t) => {
+      const on = t.dataset.case === id;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    if (focus) document.getElementById("case-" + id).focus();
+    try { localStorage.setItem("la-dim-case", id); } catch (e) {}
+    buildMatrix(); buildPresets(); updateChrome(); readout(); drawAll();
+  }
+
+  const caseTabs = Array.from(document.querySelectorAll("#dim-cases .tab"));
+  caseTabs.forEach((tEl, idx) => {
+    tEl.addEventListener("click", () => setCase(tEl.dataset.case, false));
+    tEl.addEventListener("keydown", (ev) => {
+      let ni = -1;
+      if (ev.key === "ArrowRight") ni = (idx + 1) % caseTabs.length;
+      else if (ev.key === "ArrowLeft") ni = (idx - 1 + caseTabs.length) % caseTabs.length;
+      else if (ev.key === "Home") ni = 0;
+      else if (ev.key === "End") ni = caseTabs.length - 1;
+      if (ni >= 0) { ev.preventDefault(); setCase(caseTabs[ni].dataset.case, true); }
+    });
+  });
+
+  document.getElementById("dim-reset").addEventListener("click", () => {
+    cols = cur().cols.map((c) => c.slice());
+    syncInputs(); drawAll(); readout();
+  });
+
+  // -----------------------------------------------------------------------
+  //  Orbit (only on whichever pane is 3D) + zoom.  Draw on demand, no rAF loop.
+  // -----------------------------------------------------------------------
+  function wireOrbit(cv, vp) {
+    let dragging = false, lastX = 0, lastY = 0;
+    cv.addEventListener("pointerdown", (e) => {
+      if (threeDeePane() === vp) {
+        dragging = true; lastX = e.clientX; lastY = e.clientY;
+        try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+    });
+    cv.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      yaw += (e.clientX - lastX) * 0.01;
+      pitch += (e.clientY - lastY) * 0.01;
+      pitch = Math.max(-1.45, Math.min(1.45, pitch));
+      lastX = e.clientX; lastY = e.clientY;
+      drawAll();
+    });
+    const end = () => { dragging = false; };
+    cv.addEventListener("pointerup", end);
+    cv.addEventListener("pointercancel", end);
+    cv.addEventListener("wheel", (e) => {
+      if (threeDeePane() !== vp) return;
+      e.preventDefault();
+      zoom *= e.deltaY < 0 ? 1.08 : 0.926;
+      zoom = Math.max(0.5, Math.min(2.6, zoom));
+      drawAll();
+    }, { passive: false });
+  }
+  wireOrbit(cvIn, "in");
+  wireOrbit(cvOut, "out");
+
+  // -----------------------------------------------------------------------
+  //  Theme / language / resize
+  // -----------------------------------------------------------------------
+  LA.onThemeChange(() => { COL = LA.canvasColors(); drawAll(); });
+  LA.onLangChange(() => {
+    // re-localise dynamic readout + tags + rebuilt swatches/presets/matrix aria
+    readout(); updateChrome();
+    buildMatrix(); buildPresets();
+  });
+  function resizeAll() { fitOne(VP.in); fitOne(VP.out); drawAll(); }
+  window.addEventListener("resize", resizeAll);
+
+  // -----------------------------------------------------------------------
+  //  Init — synchronous first frame (no rAF dependency).
+  // -----------------------------------------------------------------------
+  let initial = "23";
+  try { const s = localStorage.getItem("la-dim-case"); if (s && CASES[s]) initial = s; } catch (e) {}
+  fitOne(VP.in); fitOne(VP.out);
+  setCase(initial, false);
+})();
+</script>
+</body>
+</html>
