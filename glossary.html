@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glossary — Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="assets/shared.css">
+
+<!-- Theme + locale boot runs synchronously to avoid a flash of wrong theme/lang -->
+<script src="assets/shared.js"></script>
+</head>
+<body data-page="glossary">
+
+<header data-nav></header>
+
+<main class="reading">
+  <p class="eyebrow">Reference</p>
+  <h1 id="gloss-title">Glossary</h1>
+  <p id="gloss-intro" class="hero" style="padding:0;max-width:none;font-size:16px;color:var(--body)">Cross-linked definitions.</p>
+
+  <div class="gloss-controls" style="margin-top:24px">
+    <input id="gloss-search" class="gloss-search" type="search" autocomplete="off" aria-label="Search glossary">
+  </div>
+  <div id="tag-filters" class="tag-filters" style="margin:-8px 0 18px"></div>
+
+  <p id="gloss-count" class="gloss-count"></p>
+  <div id="gloss-grid" class="gloss-grid"></div>
+</main>
+
+<footer data-footer></footer>
+
+<!-- Content data (plain globals → works on file://, no fetch/CORS) -->
+<script src="content/strings.en.js"></script>
+<script src="content/strings.es.js"></script>
+<script src="content/sources.data.js"></script>
+<script src="content/glossary.data.js"></script>
+<script src="content/glossary.en.js"></script>
+<script src="content/glossary.es.js"></script>
+
+<!-- Libraries -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script defer src="assets/glossary.js"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear algebra, visually</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shared.css">
+
+<script src="assets/shared.js"></script>
+</head>
+<body data-page="home">
+
+<header data-nav></header>
+
+<div class="hero">
+  <p class="eyebrow" data-i18n="home.eyebrow">Visual notes</p>
+  <h1 data-i18n="home.title">Linear algebra you can see</h1>
+  <p data-i18n-html="home.lede">Durable, visual notes for linear algebra.</p>
+</div>
+
+<main class="hub">
+  <a class="hub-card" href="2d.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke="var(--grid-orig)" stroke-width="1">
+          <path d="M40 20V180M100 20V180M160 20V180M220 20V180M280 20V180M40 40H300M40 80H300M40 120H300M40 160H300" opacity="0.5"/>
+        </g>
+        <path d="M160 100 L250 70 L280 130 L190 160 Z" fill="var(--vec-j)" opacity="0.16"/>
+        <g stroke-width="3" stroke-linecap="round" fill="none">
+          <line x1="160" y1="100" x2="250" y2="70" stroke="var(--vec-i)"/>
+          <line x1="160" y1="100" x2="190" y2="160" stroke="var(--vec-j)"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="home.2d.kicker">Interactive</span>
+      <div class="hub-card__title" data-i18n="home.2d.title">2D transformations</div>
+      <p class="hub-card__desc" data-i18n="home.2d.desc"></p>
+    </div>
+  </a>
+
+  <a class="hub-card" href="3d.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="var(--vec-k)" opacity="0.12">
+          <path d="M120 120 L200 100 L240 130 L160 150 Z"/>
+        </g>
+        <g stroke-width="2.5" stroke-linecap="round" fill="none">
+          <line x1="160" y1="130" x2="120" y2="120" stroke="var(--vec-i)"/>
+          <line x1="160" y1="130" x2="200" y2="100" stroke="var(--vec-j)"/>
+          <line x1="160" y1="130" x2="160" y2="60" stroke="var(--vec-k)"/>
+        </g>
+        <g stroke="var(--grid-moved)" stroke-width="1.4" opacity="0.6" fill="none">
+          <path d="M120 120 L200 100 L240 130 L160 150 Z M120 120 L120 80 M200 100 L200 60 M240 130 L240 90 M160 150 L160 110 M120 80 L200 60 L240 90 L160 110 Z"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="home.3d.kicker">Interactive</span>
+      <div class="hub-card__title" data-i18n="home.3d.title">3D transformations</div>
+      <p class="hub-card__desc" data-i18n="home.3d.desc"></p>
+    </div>
+  </a>
+
+  <a class="hub-card" href="glossary.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g fill="none" stroke="var(--vec-i)" stroke-width="2">
+          <circle cx="90" cy="70" r="10"/><circle cx="220" cy="60" r="10"/>
+          <circle cx="160" cy="140" r="10"/><circle cx="250" cy="140" r="10"/>
+        </g>
+        <g stroke="var(--grid-moved)" stroke-width="1.6" opacity="0.7">
+          <line x1="90" y1="70" x2="220" y2="60"/><line x1="90" y1="70" x2="160" y2="140"/>
+          <line x1="220" y1="60" x2="250" y2="140"/><line x1="160" y1="140" x2="250" y2="140"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="home.glossary.kicker">Reference</span>
+      <div class="hub-card__title" data-i18n="home.glossary.title">Glossary</div>
+      <p class="hub-card__desc" data-i18n="home.glossary.desc"></p>
+    </div>
+  </a>
+
+  <a class="hub-card" href="notation.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <text x="60" y="90" font-family="var(--font-mono)" font-size="34" fill="var(--vec-i)">A&#7488;</text>
+        <text x="150" y="90" font-family="var(--font-mono)" font-size="34" fill="var(--muted)">A&#8315;&#185;</text>
+        <text x="70" y="150" font-family="var(--font-mono)" font-size="30" fill="var(--vec-j)">&#955;v</text>
+        <text x="150" y="150" font-family="var(--font-mono)" font-size="30" fill="var(--muted)">&#8741;v&#8741;</text>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="home.notation.kicker">Reference</span>
+      <div class="hub-card__title" data-i18n="home.notation.title">Notation</div>
+      <p class="hub-card__desc" data-i18n="home.notation.desc"></p>
+    </div>
+  </a>
+
+  <a class="hub-card" href="notes.html">
+    <div class="hub-card__art">
+      <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke="var(--grid-orig)" stroke-width="6" stroke-linecap="round">
+          <line x1="70" y1="60" x2="250" y2="60"/><line x1="70" y1="90" x2="250" y2="90"/>
+          <line x1="70" y1="120" x2="210" y2="120"/>
+        </g>
+        <line x1="70" y1="150" x2="170" y2="150" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="hub-card__body">
+      <span class="hub-card__kicker" data-i18n="home.notes.kicker">Notes</span>
+      <div class="hub-card__title" data-i18n="home.notes.title">Notes</div>
+      <p class="hub-card__desc" data-i18n="home.notes.desc"></p>
+    </div>
+  </a>
+</main>
+
+<footer data-footer></footer>
+
+<script src="content/strings.en.js"></script>
+<script src="content/strings.es.js"></script>
+<script>
+(function () {
+  function localize() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = LA.t(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+      el.innerHTML = LA.t(el.getAttribute("data-i18n-html"));
+    });
+  }
+  localize();
+  LA.onLangChange(localize);
+})();
+</script>
+</body>
+</html>
