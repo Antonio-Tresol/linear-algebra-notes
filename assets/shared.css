@@ -79,6 +79,10 @@
 *::before,
 *::after { box-sizing: border-box; }
 
+/* The hidden attribute must always hide, even on elements with a display rule
+   (e.g. .matrix-row{display:grid}) that would otherwise win on specificity. */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; }
 
 @media (prefers-reduced-motion: reduce) {

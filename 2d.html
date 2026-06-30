@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="assets/shared.css?v=20260629d">
+<link rel="stylesheet" href="assets/shared.css?v=20260629f">
 
-<script src="assets/shared.js?v=20260629d"></script>
+<script src="assets/shared.js?v=20260629f"></script>
 </head>
 <body data-page="2d">
 
@@ -20,56 +20,197 @@
 <section class="viz">
   <div class="stage" aria-hidden="false">
     <canvas id="c" role="img" aria-label="A coordinate grid being bent by a 2 by 2 matrix. The two basis vectors i-hat and j-hat move to the matrix columns, and the unit square's image is shaded; its area equals the determinant."></canvas>
-    <div class="stage-hint" data-i18n="viz2d.stageHint">Each column of the matrix is where a basis vector lands.</div>
+    <div class="stage-hint" id="stage-hint" data-i18n="viz2d.stageHint">Each column of the matrix is where a basis vector lands.</div>
   </div>
 
   <div class="panel">
-    <div class="card">
-      <h1 data-i18n="viz2d.title">Transformation matrix</h1>
-      <p class="sub" data-i18n-html="viz2d.sub">Each <em>column</em> says where a basis vector lands. The grid bends to follow. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
-      <div class="matrix-row">
-        <div class="bracket">[</div>
-        <div class="cells cells--2">
-          <input id="a" type="number" step="0.1" value="1" aria-label="a, top-left">
-          <input id="b" type="number" step="0.1" value="0" aria-label="b, top-right">
-          <input id="c2" type="number" step="0.1" value="0" aria-label="c, bottom-left">
-          <input id="d" type="number" step="0.1" value="1" aria-label="d, bottom-right">
+    <div class="tabs" role="tablist" aria-label="Transformation modes">
+      <button class="tab" id="tab-transform" role="tab" aria-selected="true" aria-controls="panel-transform" data-i18n="viz.tab.transform">Transform</button>
+      <button class="tab" id="tab-inverse" role="tab" aria-selected="false" aria-controls="panel-inverse" tabindex="-1" data-i18n="viz.tab.inverse">Inverse</button>
+      <button class="tab" id="tab-compose" role="tab" aria-selected="false" aria-controls="panel-compose" tabindex="-1" data-i18n="viz.tab.compose">Compose</button>
+    </div>
+
+    <!-- ===================== TRANSFORM ===================== -->
+    <div class="tabpanel" id="panel-transform" role="tabpanel" aria-labelledby="tab-transform">
+      <div class="card">
+        <h1 data-i18n="viz2d.title">Transformation matrix</h1>
+        <p class="sub" data-i18n-html="viz2d.sub">Each <em>column</em> says where a basis vector lands. The grid bends to follow. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--2">
+            <input id="tf-a" type="number" step="0.1" value="1" aria-label="a, top-left">
+            <input id="tf-b" type="number" step="0.1" value="0" aria-label="b, top-right">
+            <input id="tf-c" type="number" step="0.1" value="0" aria-label="c, bottom-left">
+            <input id="tf-d" type="number" step="0.1" value="1" aria-label="d, bottom-right">
+          </div>
+        </div>
+        <div class="col-key col-key--2">
+          <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="viz2d.iLands">î lands here</span></span>
+          <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="viz2d.jLands">ĵ lands here</span></span>
+        </div>
+        <div class="buttons">
+          <button id="tf-animate" class="btn btn--primary" data-i18n="viz.animate">Animate from identity</button>
+          <button id="tf-reset" class="btn" data-i18n="viz.reset">Reset</button>
+        </div>
+
+        <p class="label" data-i18n="viz.shapes.label">Drop a shape (drag it in the space)</p>
+        <div class="shape-palette" id="tf-shapes" role="group" aria-label="Shape palette">
+          <button class="shape-btn" data-shape="point" aria-pressed="false" aria-label="Place a point" data-i18n-aria="viz.shapes.point" title="Point">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="2.5" fill="currentColor" stroke="none"></circle></svg>
+          </button>
+          <button class="shape-btn" data-shape="vector" aria-pressed="false" aria-label="Place a vector" data-i18n-aria="viz.shapes.vector" title="Vector">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16 L15 5 M15 5 L15 10 M15 5 L10 5"></path></svg>
+          </button>
+          <button class="shape-btn" data-shape="square" aria-pressed="false" aria-label="Place a unit square" data-i18n-aria="viz.shapes.square" title="Unit square">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4.5" y="4.5" width="11" height="11"></rect></svg>
+          </button>
+          <button class="shape-btn" data-shape="circle" aria-pressed="false" aria-label="Place a circle" data-i18n-aria="viz.shapes.circle" title="Circle">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="6"></circle></svg>
+          </button>
+          <button class="shape-btn" data-shape="triangle" aria-pressed="false" aria-label="Place a triangle" data-i18n-aria="viz.shapes.triangle" title="Triangle">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M10 4 L16 16 L4 16 Z"></path></svg>
+          </button>
+          <button class="shape-btn" data-shape="fglyph" aria-pressed="false" aria-label="Place an F glyph" data-i18n-aria="viz.shapes.fglyph" title="F glyph">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 L6 4 L15 4 M6 10 L13 10"></path></svg>
+          </button>
+          <button id="tf-clear" class="btn" data-i18n="viz.shapes.clear" style="margin-left:auto">Clear shapes</button>
         </div>
       </div>
-      <div class="col-key col-key--2">
-        <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="viz2d.iLands">î lands here</span></span>
-        <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="viz2d.jLands">ĵ lands here</span></span>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.presets">Presets</p>
+        <div class="presets">
+          <button class="btn" data-m="0,-1,1,0" data-i18n="viz2d.p.rot90">Rotate 90°</button>
+          <button class="btn" data-m="0.707,-0.707,0.707,0.707" data-i18n="viz2d.p.rot45">Rotate 45°</button>
+          <button class="btn" data-m="1,1,0,1" data-i18n="viz2d.p.shearX">Shear x</button>
+          <button class="btn" data-m="1,0,1,1" data-i18n="viz2d.p.shearY">Shear y</button>
+          <button class="btn" data-m="2,0,0,2" data-i18n="viz2d.p.scale2">Scale 2×</button>
+          <button class="btn" data-m="-1,0,0,1" data-i18n="viz2d.p.flipX">Flip x</button>
+          <button class="btn" data-m="1,0,0,-1" data-i18n="viz2d.p.flipY">Flip y</button>
+          <button class="btn" data-m="1,0,0,0" data-i18n="viz2d.p.collapse">Collapse</button>
+        </div>
       </div>
-      <div class="buttons">
-        <button id="animate" class="btn btn--primary" data-i18n="viz.animate">Animate from identity</button>
-        <button id="reset" class="btn" data-i18n="viz.reset">Reset</button>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.readout">Readout</p>
+        <div class="readout">
+          <div class="line"><span class="k" data-i18n="viz.iGoesTo">î goes to</span><span class="v" id="tf-r-i">(1, 0)</span></div>
+          <div class="line"><span class="k" data-i18n="viz.jGoesTo">ĵ goes to</span><span class="v" id="tf-r-j">(0, 1)</span></div>
+          <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="tf-r-det">1.00</span></div>
+          <div class="line"><span class="k" data-i18n="viz2d.areaScale">Area scale</span><span class="v" id="tf-r-area">1.00×</span></div>
+          <div class="line"><span class="k" data-i18n="viz.orient">Orientation</span><span class="v orient preserved" id="tf-r-orient">preserved</span></div>
+        </div>
+        <p class="hint" data-i18n-html="viz2d.hint">The shaded patch is the image of the unit square. Its signed area equals the <a href="glossary.html#determinant">determinant</a>: negative means space got flipped, zero means it collapsed onto a line and the matrix is <a href="glossary.html#singular">singular</a>.</p>
       </div>
     </div>
 
-    <div class="card">
-      <p class="label" data-i18n="viz.presets">Presets</p>
-      <div class="presets">
-        <button class="btn" data-m="0,-1,1,0" data-i18n="viz2d.p.rot90">Rotate 90°</button>
-        <button class="btn" data-m="0.707,-0.707,0.707,0.707" data-i18n="viz2d.p.rot45">Rotate 45°</button>
-        <button class="btn" data-m="1,1,0,1" data-i18n="viz2d.p.shearX">Shear x</button>
-        <button class="btn" data-m="1,0,1,1" data-i18n="viz2d.p.shearY">Shear y</button>
-        <button class="btn" data-m="2,0,0,2" data-i18n="viz2d.p.scale2">Scale 2×</button>
-        <button class="btn" data-m="-1,0,0,1" data-i18n="viz2d.p.flipX">Flip x</button>
-        <button class="btn" data-m="1,0,0,-1" data-i18n="viz2d.p.flipY">Flip y</button>
-        <button class="btn" data-m="1,0,0,0" data-i18n="viz2d.p.collapse">Collapse</button>
+    <!-- ===================== INVERSE ===================== -->
+    <div class="tabpanel" id="panel-inverse" role="tabpanel" aria-labelledby="tab-inverse" hidden>
+      <div class="card">
+        <h1 data-i18n="viz.inv.title">The inverse undoes A</h1>
+        <p class="sub" data-i18n="viz.inv.sub">The inverse A⁻¹ undoes A. Apply A, then A⁻¹, and space returns to where it began.</p>
+
+        <p class="label" data-i18n="viz.inv.matrixA">Matrix A</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--2">
+            <input id="inv-a" type="number" step="0.1" value="2" aria-label="A: top-left">
+            <input id="inv-b" type="number" step="0.1" value="0" aria-label="A: top-right">
+            <input id="inv-c" type="number" step="0.1" value="0" aria-label="A: bottom-left">
+            <input id="inv-d" type="number" step="0.1" value="2" aria-label="A: bottom-right">
+          </div>
+        </div>
+
+        <div class="col-key col-key--2">
+          <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="viz2d.iLands">î lands here</span></span>
+          <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="viz2d.jLands">ĵ lands here</span></span>
+        </div>
+
+        <div class="buttons">
+          <button id="inv-run" class="btn btn--primary" data-i18n="viz.inv.applyUndo">Apply A, then undo</button>
+          <button id="inv-reset" class="btn" data-i18n="viz.reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.inv.label">Inverse A⁻¹</p>
+        <div class="matrix-row" id="inv-matrix-wrap">
+          <div class="bracket">[</div>
+          <div class="cells cells--2">
+            <span class="v" id="inv-r0">0.50</span>
+            <span class="v" id="inv-r1">0.00</span>
+            <span class="v" id="inv-r2">0.00</span>
+            <span class="v" id="inv-r3">0.50</span>
+          </div>
+        </div>
+        <p class="hint" id="inv-none" data-i18n="viz.inv.none" hidden>det(A) = 0, so A flattens space onto a line. There is no inverse: a collapse cannot be undone.</p>
+        <div class="readout" style="margin-top:12px">
+          <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="inv-det">4.00</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <p class="label" data-i18n="viz.readout">Readout</p>
-      <div class="readout">
-        <div class="line"><span class="k" data-i18n="viz.iGoesTo">î goes to</span><span class="v" id="r-i">(1, 0)</span></div>
-        <div class="line"><span class="k" data-i18n="viz.jGoesTo">ĵ goes to</span><span class="v" id="r-j">(0, 1)</span></div>
-        <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="r-det">1.00</span></div>
-        <div class="line"><span class="k" data-i18n="viz2d.areaScale">Area scale</span><span class="v" id="r-area">1.00×</span></div>
-        <div class="line"><span class="k" data-i18n="viz.orient">Orientation</span><span class="v orient preserved" id="r-orient">preserved</span></div>
+    <!-- ===================== COMPOSE ===================== -->
+    <div class="tabpanel" id="panel-compose" role="tabpanel" aria-labelledby="tab-compose" hidden>
+      <div class="card">
+        <h1 data-i18n="matmul.title">Multiplying = composing</h1>
+        <p class="sub" data-i18n-html="matmul.sub">A matrix product is a <em>composition</em>: AB means "do B first, then A". Order matters, so AB is usually not BA. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
+
+        <p class="label" id="cmp-labA" data-i18n="matmul.matrixA">Matrix A (applied second)</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--2">
+            <input id="cmp-a0" type="number" step="0.1" value="0" aria-label="A: top-left">
+            <input id="cmp-a1" type="number" step="0.1" value="-1" aria-label="A: top-right">
+            <input id="cmp-a2" type="number" step="0.1" value="1" aria-label="A: bottom-left">
+            <input id="cmp-a3" type="number" step="0.1" value="0" aria-label="A: bottom-right">
+          </div>
+        </div>
+
+        <p class="label" id="cmp-labB" data-i18n="matmul.matrixB">Matrix B (applied first)</p>
+        <div class="matrix-row">
+          <div class="bracket">[</div>
+          <div class="cells cells--2">
+            <input id="cmp-b0" type="number" step="0.1" value="1" aria-label="B: top-left">
+            <input id="cmp-b1" type="number" step="0.1" value="1" aria-label="B: top-right">
+            <input id="cmp-b2" type="number" step="0.1" value="0" aria-label="B: bottom-left">
+            <input id="cmp-b3" type="number" step="0.1" value="1" aria-label="B: bottom-right">
+          </div>
+        </div>
+
+        <div class="col-key col-key--2">
+          <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="viz2d.iLands">î lands here</span></span>
+          <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="viz2d.jLands">ĵ lands here</span></span>
+        </div>
+
+        <div class="buttons">
+          <button id="cmp-animate" class="btn btn--primary" data-i18n="matmul.animate">Animate composition</button>
+          <button id="cmp-order" class="btn" data-i18n="matmul.showBA">Show B∘A instead</button>
+          <button id="cmp-reset" class="btn" data-i18n="viz.reset">Reset</button>
+        </div>
       </div>
-      <p class="hint" data-i18n-html="viz2d.hint">The shaded patch is the image of the unit square. Its signed area equals the <a href="glossary.html#determinant">determinant</a>: negative means space got flipped, zero means it collapsed onto a line and the matrix is <a href="glossary.html#singular">singular</a>.</p>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.presets">Presets</p>
+        <div class="presets">
+          <button class="btn" data-a="0,-1,1,0" data-b="1,1,0,1" data-i18n="matmul.p.rotShear">A: rotate 90°, B: shear x</button>
+          <button class="btn" data-a="2,0,0,2" data-b="0.707,-0.707,0.707,0.707" data-i18n="matmul.p.scaleRot">A: scale 2×, B: rotate 45°</button>
+          <button class="btn" data-a="1,1,0,1" data-b="1,0,1,1" data-i18n="matmul.p.shearShear">A: shear x, B: shear y</button>
+          <button class="btn" data-a="1,0,0,-1" data-b="0,-1,1,0" data-i18n="matmul.p.flipRot">A: flip y, B: rotate 90°</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="label" data-i18n="viz.readout">Readout</p>
+        <div class="readout">
+          <div class="line"><span class="k" id="cmp-r-prod-key" data-i18n="matmul.product">Product AB</span><span class="v" id="cmp-r-prod">[0, -1; 1, 1]</span></div>
+          <div class="line"><span class="k" data-i18n="matmul.detA">det(A)</span><span class="v" id="cmp-r-detA">1.00</span></div>
+          <div class="line"><span class="k" data-i18n="matmul.detB">det(B)</span><span class="v" id="cmp-r-detB">1.00</span></div>
+          <div class="line"><span class="k" data-i18n="matmul.detProductOf">det(A) · det(B)</span><span class="v" id="cmp-r-detmul">1.00</span></div>
+          <div class="line"><span class="k" id="cmp-r-detprod-key" data-i18n="matmul.detProduct">det(AB)</span><span class="v" id="cmp-r-detprod">1.00</span></div>
+        </div>
+        <p class="hint" data-i18n-html="matmul.hint">Notice det(AB) = det(A) · det(B), always. Swapping the order changes the product matrix (AB ≠ BA) but never its determinant, since det(AB) = det(BA). The shaded patch is the image of the unit square; see <a href="glossary.html#determinant">determinant</a>.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -83,11 +224,11 @@
 
 <footer data-footer></footer>
 
-<script src="content/strings.en.js?v=20260629d"></script>
-<script src="content/strings.es.js?v=20260629d"></script>
-<script src="content/sources.data.js?v=20260629d"></script>
-<script src="content/keyideas.en.js?v=20260629d"></script>
-<script src="content/keyideas.es.js?v=20260629d"></script>
+<script src="content/strings.en.js?v=20260629f"></script>
+<script src="content/strings.es.js?v=20260629f"></script>
+<script src="content/sources.data.js?v=20260629f"></script>
+<script src="content/keyideas.en.js?v=20260629f"></script>
+<script src="content/keyideas.es.js?v=20260629f"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <script>
@@ -96,6 +237,7 @@
   function paint() {
     document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
     document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", LA.t(el.getAttribute("data-i18n-aria"))); });
     var ki = document.getElementById("keyideas");
     if (ki) LA.renderKeyIdeas(document.body.dataset.page, ki);
   }
@@ -108,18 +250,37 @@
 (function () {
   const canvas = document.getElementById("c");
   const ctx = canvas.getContext("2d");
-
   let COL = LA.canvasColors();
-  const inputs = {
-    a: document.getElementById("a"), b: document.getElementById("b"),
-    c: document.getElementById("c2"), d: document.getElementById("d"),
-  };
 
-  let cur = [1, 0, 0, 1], target = [1, 0, 0, 1], from = [1, 0, 0, 1];
-  let animStart = 0, animating = false;
-  const DUR = 700;
+  // ---------- shared geometry / drawing ----------
+  const ID = [1, 0, 0, 1];
   let W = 0, H = 0, cx = 0, cy = 0, scale = 50;
   const GRID_N = 12;
+  const DUR = 700;     // per-stage tween
+  const PAUSE = 460;   // hold between stages
+  let animToken = 0;   // bump to cancel any in-flight animation
+
+  // The matrix the grid is currently drawn at (animated state), plus an
+  // optional faint "ghost" matrix drawn behind it (used by Inverse).
+  let cur = ID.slice();
+  let ghost = null;
+
+  const S = (x, y) => [cx + x * scale, cy - y * scale];
+  // screen -> world (inverse of S), needed for dropping/dragging shapes.
+  const Sinv = (sx, sy) => [(sx - cx) / scale, (cy - sy) / scale];
+  const apply = (m, x, y) => [m[0] * x + m[1] * y, m[2] * x + m[3] * y];
+  const det = (m) => m[0] * m[3] - m[1] * m[2];
+  // Row-major [a,b,c,d]=[[a,b],[c,d]]. P=M·N applies N first, then M.
+  const mul = (M, N) => [
+    M[0] * N[0] + M[1] * N[2], M[0] * N[1] + M[1] * N[3],
+    M[2] * N[0] + M[3] * N[2], M[2] * N[1] + M[3] * N[3],
+  ];
+  // Row-major inverse: 1/det · [d,-b,-c,a]. Returns null when singular.
+  function inverse(m) {
+    const D = det(m);
+    if (Math.abs(D) < 1e-9) return null;
+    return [m[3] / D, -m[1] / D, -m[2] / D, m[0] / D];
+  }
 
   function resize() {
     const dim = LA.fitCanvas(canvas, ctx);
@@ -128,9 +289,6 @@
     scale = Math.max(28, Math.min(W, H) / (2 * 6.5));
     draw();
   }
-
-  const S = (x, y) => [cx + x * scale, cy - y * scale];
-  const apply = (m, x, y) => [m[0] * x + m[1] * y, m[2] * x + m[3] * y];
 
   function drawGridLines(m, color, width, alpha) {
     ctx.save();
@@ -182,81 +340,468 @@
   }
 
   function drawUnitSquare(m) {
-    const det = m[0] * m[3] - m[1] * m[2];
+    const d = det(m);
     const o = apply(m, 0, 0), i = apply(m, 1, 0), ij = apply(m, 1, 1), j = apply(m, 0, 1);
     const so = S(o[0], o[1]), si = S(i[0], i[1]), sij = S(ij[0], ij[1]), sj = S(j[0], j[1]);
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(so[0], so[1]); ctx.lineTo(si[0], si[1]);
     ctx.lineTo(sij[0], sij[1]); ctx.lineTo(sj[0], sj[1]); ctx.closePath();
-    ctx.fillStyle = det < 0 ? COL.flip : COL.jHat;
+    ctx.fillStyle = d < 0 ? COL.flip : COL.jHat;
     ctx.globalAlpha = 0.16; ctx.fill();
     ctx.restore();
   }
 
+  // ---------- draggable shapes (Transform mode) ----------
+  // Each shape stores a world-space anchor at identity. It is drawn faintly at
+  // the anchor and solidly at apply(cur, anchor). Dragging mutates the anchor.
+  const SHAPE_R = 1.0;  // world-size used by circle/square/triangle/F
+  let shapes = [];      // {type, ax, ay}
+  let armed = null;     // shape type queued for the next canvas click
+  let dragging = null;  // index of shape being dragged
+
+  // Local polylines/points (world units, before placement + matrix), so the
+  // F mirrors automatically once transformed by a det<0 matrix.
+  function shapeLocal(type) {
+    const r = SHAPE_R;
+    switch (type) {
+      case "point":  return { kind: "point", pts: [[0, 0]] };
+      case "vector": return { kind: "vector", pts: [[0, 0], [r, r]] };
+      case "square": return { kind: "poly", closed: true, pts: [[0, 0], [r, 0], [r, r], [0, r]] };
+      case "triangle": return { kind: "poly", closed: true, pts: [[0, r], [r, -r], [-r, -r]] };
+      case "circle": {
+        const p = []; const n = 40;
+        for (let k = 0; k < n; k++) { const a = (k / n) * Math.PI * 2; p.push([r * Math.cos(a), r * Math.sin(a)]); }
+        return { kind: "poly", closed: true, pts: p };
+      }
+      case "fglyph": return {
+        kind: "poly", closed: false,
+        pts: [[0, 0], [0, 1.4 * r], [1.0 * r, 1.4 * r], [0, 1.4 * r], [0, 0.7 * r], [0.7 * r, 0.7 * r]],
+      };
+      default: return { kind: "point", pts: [[0, 0]] };
+    }
+  }
+
+  function shapeScreenPts(sh, m) {
+    const loc = shapeLocal(sh.type);
+    return loc.pts.map(([lx, ly]) => {
+      const wx = sh.ax + lx, wy = sh.ay + ly;       // place in world (identity)
+      const [tx, ty] = apply(m, wx, wy);            // image under matrix
+      return S(tx, ty);
+    });
+  }
+
+  function strokeShape(sh, m, color, width, alpha, fill) {
+    const loc = shapeLocal(sh.type);
+    const pts = shapeScreenPts(sh, m);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (loc.kind === "point") {
+      ctx.beginPath(); ctx.arc(pts[0][0], pts[0][1], 4.5, 0, Math.PI * 2); ctx.fill();
+    } else if (loc.kind === "vector") {
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[1][0], pts[1][1]); ctx.stroke();
+      const o = pts[0], e = pts[1];
+      const ang = Math.atan2(o[1] - e[1], e[0] - o[0]);
+      const hs = 10;
+      ctx.beginPath();
+      ctx.moveTo(e[0], e[1]);
+      ctx.lineTo(e[0] - hs * Math.cos(ang - 0.5), e[1] + hs * Math.sin(ang - 0.5));
+      ctx.lineTo(e[0] - hs * Math.cos(ang + 0.5), e[1] + hs * Math.sin(ang + 0.5));
+      ctx.closePath(); ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
+      if (loc.closed) ctx.closePath();
+      if (fill && loc.closed) { ctx.globalAlpha = alpha * 0.18; ctx.fill(); ctx.globalAlpha = alpha; }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawShapes(m) {
+    for (const sh of shapes) {
+      strokeShape(sh, ID, COL.gridOrig, 1.4, 0.55, false);  // faint input
+      const d = det(m);
+      const col = d < 0 ? COL.flip : COL.iHat;
+      strokeShape(sh, m, col, 2.4, 1, true);                 // solid image
+    }
+  }
+
+  // pointer position in screen (canvas CSS) coordinates
+  function ptr(ev) {
+    const rect = canvas.getBoundingClientRect();
+    return [ev.clientX - rect.left, ev.clientY - rect.top];
+  }
+  function hitShape(sx, sy) {
+    // hit-test against the image (solid) anchor under the current matrix
+    for (let i = shapes.length - 1; i >= 0; i--) {
+      const sh = shapes[i];
+      const [tx, ty] = apply(cur, sh.ax, sh.ay);
+      const sp = S(tx, ty);
+      if (Math.hypot(sp[0] - sx, sp[1] - sy) < 16) return i;
+    }
+    return -1;
+  }
+
+  function armShape(type, btn) {
+    armed = type;
+    document.querySelectorAll("#tf-shapes .shape-btn").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b === btn)));
+  }
+  function disarm() {
+    armed = null;
+    document.querySelectorAll("#tf-shapes .shape-btn").forEach((b) => b.setAttribute("aria-pressed", "false"));
+  }
+
+  // ---------- master draw dispatch ----------
+  let mode = "transform";
+
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    drawGridLines([1, 0, 0, 1], COL.gridOrig, 1, 0.5);
+    drawGridLines(ID, COL.gridOrig, 1, 0.5);
+    if (ghost) drawGridLines(ghost, COL.gridMoved, 1, 0.32);  // faint A⁻¹ grid
     drawGridLines(cur, COL.gridMoved, 1.4, 0.85);
     drawAxes();
     drawUnitSquare(cur);
+    if (mode === "transform") drawShapes(cur);
     arrow(cur[0], cur[2], COL.iHat, "î");
     arrow(cur[1], cur[3], COL.jHat, "ĵ");
   }
 
-  function updateReadout(m) {
-    const det = m[0] * m[3] - m[1] * m[2];
-    document.getElementById("r-i").textContent = "(" + LA.fmt(m[0]) + ", " + LA.fmt(m[2]) + ")";
-    document.getElementById("r-j").textContent = "(" + LA.fmt(m[1]) + ", " + LA.fmt(m[3]) + ")";
-    document.getElementById("r-det").textContent = LA.fmt(det);
-    document.getElementById("r-area").textContent = LA.fmt(Math.abs(det)) + "×";
-    const el = document.getElementById("r-orient");
+  // Tween cur from `from` to `to`; resolves onDone. Cancellable by token.
+  function runStage(token, from, to, onDone) {
+    if (LA.reduceMotion) {
+      cur = to.slice(); draw();
+      if (onDone) onDone();
+      return;
+    }
+    const start = performance.now();
+    function stepFn(now) {
+      if (token !== animToken) return;
+      let t = (now - start) / DUR;
+      if (t > 1) t = 1;
+      const e = LA.easeInOut(t);
+      for (let k = 0; k < 4; k++) cur[k] = from[k] + (to[k] - from[k]) * e;
+      draw();
+      if (t < 1) requestAnimationFrame(stepFn);
+      else if (onDone) onDone();
+    }
+    requestAnimationFrame(stepFn);
+  }
+
+  function setStageHint(key) {
+    document.getElementById("stage-hint").textContent = LA.t(key);
+  }
+
+  // ===================================================================
+  //  TRANSFORM mode
+  // ===================================================================
+  const tf = {
+    a: document.getElementById("tf-a"), b: document.getElementById("tf-b"),
+    c: document.getElementById("tf-c"), d: document.getElementById("tf-d"),
+  };
+  const tfRead = () => {
+    const v = (el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; };
+    return [v(tf.a), v(tf.b), v(tf.c), v(tf.d)];
+  };
+  const tfWrite = (m) => {
+    tf.a.value = LA.fmt(m[0]); tf.b.value = LA.fmt(m[1]);
+    tf.c.value = LA.fmt(m[2]); tf.d.value = LA.fmt(m[3]);
+  };
+  function tfReadout(m) {
+    const D = det(m);
+    document.getElementById("tf-r-i").textContent = "(" + LA.fmt(m[0]) + ", " + LA.fmt(m[2]) + ")";
+    document.getElementById("tf-r-j").textContent = "(" + LA.fmt(m[1]) + ", " + LA.fmt(m[3]) + ")";
+    document.getElementById("tf-r-det").textContent = LA.fmt(D);
+    document.getElementById("tf-r-area").textContent = LA.fmt(Math.abs(D)) + "×";
+    const el = document.getElementById("tf-r-orient");
     el.className = "v orient";
-    if (Math.abs(det) < 1e-9) { el.classList.add("degenerate"); el.textContent = LA.t("viz.orient.collapsed"); }
-    else if (det < 0) { el.classList.add("flipped"); el.textContent = LA.t("viz.orient.flipped"); }
+    if (Math.abs(D) < 1e-9) { el.classList.add("degenerate"); el.textContent = LA.t("viz.orient.collapsed"); }
+    else if (D < 0) { el.classList.add("flipped"); el.textContent = LA.t("viz.orient.flipped"); }
     else { el.classList.add("preserved"); el.textContent = LA.t("viz.orient.preserved"); }
   }
-
-  const readInputs = () => {
-    const v = (el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; };
-    return [v(inputs.a), v(inputs.b), v(inputs.c), v(inputs.d)];
-  };
-  const writeInputs = (m) => {
-    inputs.a.value = LA.fmt(m[0]); inputs.b.value = LA.fmt(m[1]);
-    inputs.c.value = LA.fmt(m[2]); inputs.d.value = LA.fmt(m[3]);
-  };
-
-  function setTarget(m, animate) {
-    target = m.slice(); updateReadout(target);
+  // Set the transform target. When animating, replay from identity.
+  function tfApply(m, animate) {
+    tfReadout(m);
+    ghost = null;
     if (animate && !LA.reduceMotion) {
-      from = cur.slice(); animStart = performance.now(); animating = true;
-      requestAnimationFrame(step);
-    } else { cur = target.slice(); draw(); }
+      const token = ++animToken;
+      cur = ID.slice(); draw();
+      runStage(token, ID.slice(), m, null);
+    } else {
+      animToken++;
+      cur = m.slice(); draw();
+    }
   }
 
-  function step(now) {
-    let t = (now - animStart) / DUR;
-    if (t >= 1) { t = 1; animating = false; }
-    const e = LA.easeInOut(t);
-    for (let k = 0; k < 4; k++) cur[k] = from[k] + (target[k] - from[k]) * e;
+  Object.values(tf).forEach((el) => el.addEventListener("input", () => { if (mode === "transform") tfApply(tfRead(), false); }));
+  document.getElementById("tf-animate").addEventListener("click", () => tfApply(tfRead(), true));
+  document.getElementById("tf-reset").addEventListener("click", () => { tfWrite(ID); tfApply(ID, true); });
+  document.querySelectorAll("#panel-transform .presets .btn").forEach((btn) =>
+    btn.addEventListener("click", () => { const m = btn.dataset.m.split(",").map(Number); tfWrite(m); tfApply(m, true); }));
+
+  // shape palette wiring
+  document.querySelectorAll("#tf-shapes .shape-btn").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const type = btn.dataset.shape;
+      if (armed === type) disarm(); else armShape(type, btn);
+    }));
+  document.getElementById("tf-clear").addEventListener("click", () => { shapes = []; disarm(); draw(); });
+
+  // pointer interaction on the canvas (Transform mode only)
+  canvas.addEventListener("pointerdown", (ev) => {
+    if (mode !== "transform") return;
+    const [sx, sy] = ptr(ev);
+    const hit = hitShape(sx, sy);
+    if (hit >= 0) {
+      dragging = hit;
+      try { canvas.setPointerCapture(ev.pointerId); } catch (e) {}
+      ev.preventDefault();
+      return;
+    }
+    if (armed) {
+      // drop a new shape: convert screen -> world, then undo the current
+      // matrix so the stored anchor is the identity-space position.
+      const [wx, wy] = Sinv(sx, sy);
+      const inv = inverse(cur) || ID;
+      const [ax, ay] = apply(inv, wx, wy);
+      shapes.push({ type: armed, ax, ay });
+      draw();
+      ev.preventDefault();
+    }
+  });
+  canvas.addEventListener("pointermove", (ev) => {
+    if (mode !== "transform" || dragging === null) return;
+    const [sx, sy] = ptr(ev);
+    const [wx, wy] = Sinv(sx, sy);
+    const inv = inverse(cur) || ID;
+    const [ax, ay] = apply(inv, wx, wy);   // keep image under pointer
+    shapes[dragging].ax = ax; shapes[dragging].ay = ay;
     draw();
-    if (animating) requestAnimationFrame(step);
+    ev.preventDefault();
+  });
+  function endDrag(ev) {
+    if (dragging !== null) {
+      try { canvas.releasePointerCapture(ev.pointerId); } catch (e) {}
+      dragging = null;
+    }
+  }
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", endDrag);
+
+  // ===================================================================
+  //  INVERSE mode
+  // ===================================================================
+  const iv = {
+    a: document.getElementById("inv-a"), b: document.getElementById("inv-b"),
+    c: document.getElementById("inv-c"), d: document.getElementById("inv-d"),
+  };
+  const ivRead = () => {
+    const v = (el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; };
+    return [v(iv.a), v(iv.b), v(iv.c), v(iv.d)];
+  };
+  const ivWrite = (m) => {
+    iv.a.value = LA.fmt(m[0]); iv.b.value = LA.fmt(m[1]);
+    iv.c.value = LA.fmt(m[2]); iv.d.value = LA.fmt(m[3]);
+  };
+  function ivReadout() {
+    const A = ivRead();
+    const D = det(A);
+    const inv = inverse(A);
+    document.getElementById("inv-det").textContent = LA.fmt(D);
+    const wrap = document.getElementById("inv-matrix-wrap");
+    const none = document.getElementById("inv-none");
+    const run = document.getElementById("inv-run");
+    if (!inv) {
+      wrap.hidden = true; none.hidden = false; run.disabled = true;
+    } else {
+      wrap.hidden = false; none.hidden = true; run.disabled = false;
+      document.getElementById("inv-r0").textContent = LA.fmt(inv[0]);
+      document.getElementById("inv-r1").textContent = LA.fmt(inv[1]);
+      document.getElementById("inv-r2").textContent = LA.fmt(inv[2]);
+      document.getElementById("inv-r3").textContent = LA.fmt(inv[3]);
+    }
+    return inv;
+  }
+  // Static frame for Inverse: A grid solid, faint A⁻¹ grid behind (if it exists).
+  function ivStatic() {
+    animToken++;
+    const A = ivRead();
+    const inv = ivReadout();
+    cur = A.slice();
+    ghost = inv ? inv.slice() : null;
+    if (!inv) {
+      // singular: draw the collapse (unit square flattened to a line)
+      ghost = null;
+    }
+    draw();
+  }
+  // Apply A from identity, pause, then return to identity via A⁻¹.
+  function ivRun() {
+    const A = ivRead();
+    const inv = ivReadout();
+    if (!inv) { ivStatic(); return; }
+    ghost = inv.slice();
+    if (LA.reduceMotion) {
+      setStageHint("viz.inv.stageApply");
+      cur = A.slice(); draw();
+      return;
+    }
+    const token = ++animToken;
+    cur = ID.slice(); draw();
+    setStageHint("viz.inv.stageApply");
+    runStage(token, ID.slice(), A, () => {
+      setTimeout(() => {
+        if (token !== animToken) return;
+        setStageHint("viz.inv.stageUndo");
+        runStage(token, A.slice(), ID.slice(), null);
+      }, PAUSE);
+    });
+  }
+  Object.values(iv).forEach((el) => el.addEventListener("input", () => { if (mode === "inverse") ivStatic(); }));
+  document.getElementById("inv-run").addEventListener("click", ivRun);
+  document.getElementById("inv-reset").addEventListener("click", () => { ivWrite([2, 0, 0, 2]); ivStatic(); });
+
+  // ===================================================================
+  //  COMPOSE mode
+  // ===================================================================
+  const cm = {
+    a0: document.getElementById("cmp-a0"), a1: document.getElementById("cmp-a1"),
+    a2: document.getElementById("cmp-a2"), a3: document.getElementById("cmp-a3"),
+    b0: document.getElementById("cmp-b0"), b1: document.getElementById("cmp-b1"),
+    b2: document.getElementById("cmp-b2"), b3: document.getElementById("cmp-b3"),
+  };
+  let orderAB = true;
+  const cmReadA = () => {
+    const v = (el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; };
+    return [v(cm.a0), v(cm.a1), v(cm.a2), v(cm.a3)];
+  };
+  const cmReadB = () => {
+    const v = (el) => { const n = parseFloat(el.value); return isFinite(n) ? n : 0; };
+    return [v(cm.b0), v(cm.b1), v(cm.b2), v(cm.b3)];
+  };
+  function cmWrite(A, B) {
+    cm.a0.value = LA.fmt(A[0]); cm.a1.value = LA.fmt(A[1]); cm.a2.value = LA.fmt(A[2]); cm.a3.value = LA.fmt(A[3]);
+    cm.b0.value = LA.fmt(B[0]); cm.b1.value = LA.fmt(B[1]); cm.b2.value = LA.fmt(B[2]); cm.b3.value = LA.fmt(B[3]);
+  }
+  function cmProduct() {
+    const A = cmReadA(), B = cmReadB();
+    return orderAB ? mul(A, B) : mul(B, A);
+  }
+  function cmReadout() {
+    const A = cmReadA(), B = cmReadB();
+    const P = cmProduct();
+    document.getElementById("cmp-r-prod").textContent =
+      "[" + LA.fmt(P[0]) + ", " + LA.fmt(P[1]) + "; " + LA.fmt(P[2]) + ", " + LA.fmt(P[3]) + "]";
+    document.getElementById("cmp-r-detA").textContent = LA.fmt(det(A));
+    document.getElementById("cmp-r-detB").textContent = LA.fmt(det(B));
+    document.getElementById("cmp-r-detmul").textContent = LA.fmt(det(A) * det(B));
+    document.getElementById("cmp-r-detprod").textContent = LA.fmt(det(P));
+    document.getElementById("cmp-r-prod-key").textContent = LA.t(orderAB ? "matmul.product" : "matmul.productBA");
+    document.getElementById("cmp-r-detprod-key").textContent = LA.t(orderAB ? "matmul.detProduct" : "matmul.detProductBA");
+  }
+  function cmStatic() {
+    animToken++;
+    ghost = null;
+    cmReadout();
+    cur = cmProduct().slice();
+    draw();
+  }
+  function cmAnimate() {
+    cmReadout();
+    ghost = null;
+    const A = cmReadA(), B = cmReadB();
+    const first = orderAB ? B : A;
+    const finalP = cmProduct();
+    const firstKey = orderAB ? "matmul.applyingB" : "matmul.applyingA";
+    const secondKey = orderAB ? "matmul.thenA" : "matmul.thenB";
+    if (LA.reduceMotion) { setStageHint(secondKey); cur = finalP.slice(); draw(); return; }
+    const token = ++animToken;
+    cur = ID.slice(); draw();
+    setStageHint(firstKey);
+    runStage(token, ID.slice(), first, () => {
+      setTimeout(() => {
+        if (token !== animToken) return;
+        setStageHint(secondKey);
+        runStage(token, first.slice(), finalP, null);
+      }, PAUSE);
+    });
+  }
+  function cmOrderLabel() {
+    document.getElementById("cmp-order").textContent = LA.t(orderAB ? "matmul.showBA" : "matmul.showAB");
+    document.getElementById("stage-hint").textContent = LA.t(orderAB ? "matmul.stageHint" : "matmul.stageHintBA");
+  }
+  Object.values(cm).forEach((el) => el.addEventListener("input", () => { if (mode === "compose") cmStatic(); }));
+  document.getElementById("cmp-animate").addEventListener("click", cmAnimate);
+  document.getElementById("cmp-order").addEventListener("click", () => { orderAB = !orderAB; cmOrderLabel(); cmStatic(); });
+  document.getElementById("cmp-reset").addEventListener("click", () => {
+    orderAB = true; cmWrite([0, -1, 1, 0], [1, 1, 0, 1]); cmOrderLabel(); cmStatic();
+  });
+  document.querySelectorAll("#panel-compose .presets .btn").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const A = btn.dataset.a.split(",").map(Number);
+      const B = btn.dataset.b.split(",").map(Number);
+      cmWrite(A, B); cmStatic();
+    }));
+
+  // ===================================================================
+  //  Tabs
+  // ===================================================================
+  const tabIds = ["transform", "inverse", "compose"];
+  const tabEls = tabIds.map((id) => document.getElementById("tab-" + id));
+
+  function enterMode(name) {
+    mode = name;
+    animToken++;                 // cancel any cross-mode animation
+    ghost = null;
+    if (name === "transform") { setStageHint("viz2d.stageHint"); tfApply(tfRead(), false); }
+    else if (name === "inverse") { setStageHint("viz.inv.sub"); ivStatic(); }
+    else { cmOrderLabel(); cmStatic(); }
   }
 
-  Object.values(inputs).forEach((el) => el.addEventListener("input", () => setTarget(readInputs(), true)));
-  document.getElementById("reset").addEventListener("click", () => { writeInputs([1, 0, 0, 1]); setTarget([1, 0, 0, 1], true); });
-  document.getElementById("animate").addEventListener("click", () => { const m = readInputs(); cur = [1, 0, 0, 1]; draw(); setTarget(m, true); });
-  document.querySelectorAll(".presets .btn").forEach((btn) => btn.addEventListener("click", () => {
-    const m = btn.dataset.m.split(",").map(Number); writeInputs(m); setTarget(m, true);
-  }));
+  function selectTab(name, focus) {
+    tabIds.forEach((id) => {
+      const t = document.getElementById("tab-" + id);
+      const p = document.getElementById("panel-" + id);
+      const on = id === name;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      p.hidden = !on;
+    });
+    if (focus) document.getElementById("tab-" + name).focus();
+    try { localStorage.setItem("la-2d-tab", name); } catch (e) {}
+    enterMode(name);
+  }
 
-  // Re-read the themed palette and repaint when the light/dark theme flips.
+  tabEls.forEach((tEl, idx) => {
+    tEl.addEventListener("click", () => selectTab(tabIds[idx], false));
+    tEl.addEventListener("keydown", (ev) => {
+      let ni = -1;
+      if (ev.key === "ArrowRight") ni = (idx + 1) % tabIds.length;
+      else if (ev.key === "ArrowLeft") ni = (idx - 1 + tabIds.length) % tabIds.length;
+      else if (ev.key === "Home") ni = 0;
+      else if (ev.key === "End") ni = tabIds.length - 1;
+      if (ni >= 0) { ev.preventDefault(); selectTab(tabIds[ni], true); }
+    });
+  });
+
+  // ---------- theme / language / resize ----------
   LA.onThemeChange(() => { COL = LA.canvasColors(); draw(); });
-  // Re-localise the dynamic readout (orientation word) when the language flips.
-  LA.onLangChange(() => updateReadout(cur));
+  LA.onLangChange(() => {
+    if (mode === "transform") tfReadout(tfRead());
+    else if (mode === "inverse") ivReadout();
+    else { cmReadout(); cmOrderLabel(); }
+  });
   window.addEventListener("resize", resize);
-  resize();
-  updateReadout(cur);
+
+  // ---------- init (synchronous first frame) ----------
+  let initial = "transform";
+  try { const s = localStorage.getItem("la-2d-tab"); if (s && tabIds.indexOf(s) >= 0) initial = s; } catch (e) {}
+  resize();                 // sizes canvas + draws
+  selectTab(initial, false);
 })();
 </script>
 </body>
