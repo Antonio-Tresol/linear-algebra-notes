@@ -8,9 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/shared.css">
+<link rel="stylesheet" href="assets/shared.css?v=20260629a">
 
-<script src="assets/shared.js"></script>
+<script src="assets/shared.js?v=20260629a"></script>
 </head>
 <body data-page="2d">
 
@@ -19,13 +19,13 @@
 <section class="viz">
   <div class="stage" aria-hidden="false">
     <canvas id="c" role="img" aria-label="A coordinate grid being bent by a 2 by 2 matrix. The two basis vectors i-hat and j-hat move to the matrix columns, and the unit square's image is shaded; its area equals the determinant."></canvas>
-    <div class="stage-hint">Each column of the matrix is where a basis vector lands.</div>
+    <div class="stage-hint" data-i18n="viz2d.stageHint">Each column of the matrix is where a basis vector lands.</div>
   </div>
 
   <div class="panel">
     <div class="card">
-      <h1>Transformation matrix</h1>
-      <p class="sub">Each <em>column</em> says where a basis vector lands. The grid bends to follow. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
+      <h1 data-i18n="viz2d.title">Transformation matrix</h1>
+      <p class="sub" data-i18n-html="viz2d.sub">Each <em>column</em> says where a basis vector lands. The grid bends to follow. See <a href="glossary.html#matrix">matrix</a> &amp; <a href="glossary.html#determinant">determinant</a>.</p>
       <div class="matrix-row">
         <div class="bracket">[</div>
         <div class="cells cells--2">
@@ -36,45 +36,59 @@
         </div>
       </div>
       <div class="col-key col-key--2">
-        <span><span class="swatch" style="background:var(--vec-i)"></span> î lands here</span>
-        <span><span class="swatch" style="background:var(--vec-j)"></span> ĵ lands here</span>
+        <span><span class="swatch" style="background:var(--vec-i)"></span> <span data-i18n="viz2d.iLands">î lands here</span></span>
+        <span><span class="swatch" style="background:var(--vec-j)"></span> <span data-i18n="viz2d.jLands">ĵ lands here</span></span>
       </div>
       <div class="buttons">
-        <button id="animate" class="btn btn--primary">Animate from identity</button>
-        <button id="reset" class="btn">Reset</button>
+        <button id="animate" class="btn btn--primary" data-i18n="viz.animate">Animate from identity</button>
+        <button id="reset" class="btn" data-i18n="viz.reset">Reset</button>
       </div>
     </div>
 
     <div class="card">
-      <p class="label">Presets</p>
+      <p class="label" data-i18n="viz.presets">Presets</p>
       <div class="presets">
-        <button class="btn" data-m="0,-1,1,0">Rotate 90°</button>
-        <button class="btn" data-m="0.707,-0.707,0.707,0.707">Rotate 45°</button>
-        <button class="btn" data-m="1,1,0,1">Shear x</button>
-        <button class="btn" data-m="1,0,1,1">Shear y</button>
-        <button class="btn" data-m="2,0,0,2">Scale 2×</button>
-        <button class="btn" data-m="-1,0,0,1">Flip x</button>
-        <button class="btn" data-m="1,0,0,-1">Flip y</button>
-        <button class="btn" data-m="1,0,0,0">Collapse</button>
+        <button class="btn" data-m="0,-1,1,0" data-i18n="viz2d.p.rot90">Rotate 90°</button>
+        <button class="btn" data-m="0.707,-0.707,0.707,0.707" data-i18n="viz2d.p.rot45">Rotate 45°</button>
+        <button class="btn" data-m="1,1,0,1" data-i18n="viz2d.p.shearX">Shear x</button>
+        <button class="btn" data-m="1,0,1,1" data-i18n="viz2d.p.shearY">Shear y</button>
+        <button class="btn" data-m="2,0,0,2" data-i18n="viz2d.p.scale2">Scale 2×</button>
+        <button class="btn" data-m="-1,0,0,1" data-i18n="viz2d.p.flipX">Flip x</button>
+        <button class="btn" data-m="1,0,0,-1" data-i18n="viz2d.p.flipY">Flip y</button>
+        <button class="btn" data-m="1,0,0,0" data-i18n="viz2d.p.collapse">Collapse</button>
       </div>
     </div>
 
     <div class="card">
-      <p class="label">Readout</p>
+      <p class="label" data-i18n="viz.readout">Readout</p>
       <div class="readout">
-        <div class="line"><span class="k">î goes to</span><span class="v" id="r-i">(1, 0)</span></div>
-        <div class="line"><span class="k">ĵ goes to</span><span class="v" id="r-j">(0, 1)</span></div>
-        <div class="line"><span class="k">Determinant</span><span class="v" id="r-det">1.00</span></div>
-        <div class="line"><span class="k">Area scale</span><span class="v" id="r-area">1.00×</span></div>
-        <div class="line"><span class="k">Orientation</span><span class="v orient preserved" id="r-orient">preserved</span></div>
+        <div class="line"><span class="k" data-i18n="viz.iGoesTo">î goes to</span><span class="v" id="r-i">(1, 0)</span></div>
+        <div class="line"><span class="k" data-i18n="viz.jGoesTo">ĵ goes to</span><span class="v" id="r-j">(0, 1)</span></div>
+        <div class="line"><span class="k" data-i18n="viz.det">Determinant</span><span class="v" id="r-det">1.00</span></div>
+        <div class="line"><span class="k" data-i18n="viz2d.areaScale">Area scale</span><span class="v" id="r-area">1.00×</span></div>
+        <div class="line"><span class="k" data-i18n="viz.orient">Orientation</span><span class="v orient preserved" id="r-orient">preserved</span></div>
       </div>
-      <p class="hint">The shaded patch is the image of the unit square. Its signed area equals the <a href="glossary.html#determinant">determinant</a>: negative means space got flipped, zero means it collapsed onto a line and the matrix is <a href="glossary.html#singular">singular</a>.</p>
+      <p class="hint" data-i18n-html="viz2d.hint">The shaded patch is the image of the unit square. Its signed area equals the <a href="glossary.html#determinant">determinant</a>: negative means space got flipped, zero means it collapsed onto a line and the matrix is <a href="glossary.html#singular">singular</a>.</p>
     </div>
   </div>
 </section>
 
 <footer data-footer></footer>
 
+<script src="content/strings.en.js?v=20260629a"></script>
+<script src="content/strings.es.js?v=20260629a"></script>
+<script>
+// Localise static [data-i18n] / [data-i18n-html] text, and re-run on language flip.
+(function () {
+  function localize() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = LA.t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = LA.t(el.getAttribute("data-i18n-html")); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", localize);
+  else localize();
+  LA.onLangChange(localize);
+})();
+</script>
 <script>
 (function () {
   const canvas = document.getElementById("c");
@@ -183,9 +197,9 @@
     document.getElementById("r-area").textContent = LA.fmt(Math.abs(det)) + "×";
     const el = document.getElementById("r-orient");
     el.className = "v orient";
-    if (Math.abs(det) < 1e-9) { el.classList.add("degenerate"); el.textContent = "collapsed (singular)"; }
-    else if (det < 0) { el.classList.add("flipped"); el.textContent = "flipped"; }
-    else { el.classList.add("preserved"); el.textContent = "preserved"; }
+    if (Math.abs(det) < 1e-9) { el.classList.add("degenerate"); el.textContent = LA.t("viz.orient.collapsed"); }
+    else if (det < 0) { el.classList.add("flipped"); el.textContent = LA.t("viz.orient.flipped"); }
+    else { el.classList.add("preserved"); el.textContent = LA.t("viz.orient.preserved"); }
   }
 
   const readInputs = () => {
@@ -223,6 +237,8 @@
 
   // Re-read the themed palette and repaint when the light/dark theme flips.
   LA.onThemeChange(() => { COL = LA.canvasColors(); draw(); });
+  // Re-localise the dynamic readout (orientation word) when the language flips.
+  LA.onLangChange(() => updateReadout(cur));
   window.addEventListener("resize", resize);
   resize();
   updateReadout(cur);

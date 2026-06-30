@@ -68,10 +68,12 @@
     table.innerHTML = html;
     typeset(table);
 
-    // conventions
+    // conventions — render **bold** (math $...$ has no ** so this is safe), then KaTeX
     var list = (tx().conventions || []);
     conv.innerHTML = list.length
-      ? "<ul>" + list.map(function (c) { return "<li>" + c + "</li>"; }).join("") + "</ul>"
+      ? "<ul>" + list.map(function (c) {
+          return "<li>" + c.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>") + "</li>";
+        }).join("") + "</ul>"
       : "";
     typeset(conv);
   }
